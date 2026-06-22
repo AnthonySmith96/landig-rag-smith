@@ -8,9 +8,9 @@
     "npm": ">=10"
   },
   "scripts": {
-    "build": "ng build",
-    "start": "ng serve --host 127.0.0.1 --port 4200",
-    "check": "ng build"
+    "build": "node --experimental-require-module ./node_modules/@angular/cli/bin/ng.js build",
+    "start": "node --experimental-require-module ./node_modules/@angular/cli/bin/ng.js serve --host 127.0.0.1 --port 4200",
+    "check": "node --experimental-require-module ./node_modules/@angular/cli/bin/ng.js build"
   },
   "dependencies": {
     "@angular/common": "22.0.2",

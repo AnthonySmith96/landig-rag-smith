@@ -26,13 +26,7 @@
             "index": "src/index.html",
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
-            "assets": [
-              {
-                "glob": "screen.png",
-                "input": ".",
-                "output": "."
-              }
-            ],
+            "assets": [],
             "styles": [
               "src/styles.css"
             ]
