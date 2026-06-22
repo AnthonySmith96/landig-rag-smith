@@ -1,0 +1,48 @@
+<section class="data-band" aria-labelledby="portfolio-title">
+  <div class="section-label">
+    <span class="material-symbols-outlined" aria-hidden="true">deployed_code</span>
+    <h2 id="portfolio-title">Portafolio</h2>
+  </div>
+
+  @if (isLoading()) {
+    <div class="status-box">Cargando proyectos...</div>
+  } @else if (error()) {
+    <div class="status-box status-box--alert">{{ error() }}</div>
+  } @else if (visibleProjects().length === 0) {
+    <div class="status-box">La evidencia de proyectos aparecerá aquí cuando PocketBase tenga registros activos.</div>
+  } @else {
+    <div class="project-grid">
+      @for (project of visibleProjects(); track project.id) {
+        <article class="project-card neo-shadow">
+          <div class="project-index">0{{ $index + 1 }}</div>
+          @if (project.image) {
+            <img [src]="project.image" [alt]="project.project_name" loading="lazy">
+          } @else {
+            <div class="image-placeholder" aria-hidden="true">
+              <span class="material-symbols-outlined">deployed_code</span>
+            </div>
+          }
+          <div>
+            <h3>{{ project.project_name }}</h3>
+            @if (project.one_liner) {
+              <p class="one-liner">{{ project.one_liner }}</p>
+            }
+            @if (project.impact) {
+              <p>{{ project.impact }}</p>
+            }
+            @if (project.tech_stack?.length) {
+              <ul class="tech-list" aria-label="Stack técnico">
+                @for (item of project.tech_stack.slice(0, 4); track item) {
+                  <li>{{ item }}</li>
+                }
+              </ul>
+            }
+          </div>
+          @if (project.url) {
+            <a class="project-link neo-action" [href]="project.url" target="_blank" rel="noreferrer">Abrir</a>
+          }
+        </article>
+      }
+    </div>
+  }
+</section>

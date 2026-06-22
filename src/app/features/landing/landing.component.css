@@ -1,0 +1,420 @@
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(1rem, 3vw, 2.5rem);
+  min-height: 5rem;
+  padding: 1rem clamp(1.25rem, 4vw, 2rem);
+  border-bottom: 4px solid var(--color-primary);
+  background: var(--color-bg);
+  box-shadow: 4px 4px 0 0 var(--color-primary);
+  font-family: var(--font-headline);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.brand {
+  color: var(--color-primary);
+  font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+  font-style: italic;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.25rem, 4vw, 4rem);
+  font-size: clamp(0.95rem, 1.5vw, 1.12rem);
+}
+
+.nav-links a {
+  padding: 0.35rem 0.45rem;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.nav-links a:hover {
+  background: var(--color-primary);
+  color: var(--color-yellow);
+}
+
+.nav-links .active {
+  color: var(--color-blue);
+  text-decoration: underline;
+  text-decoration-thickness: 4px;
+  text-underline-offset: 0.45rem;
+}
+
+.nav-links .active:hover {
+  color: var(--color-yellow);
+  text-decoration-color: var(--color-yellow);
+}
+
+.hire-button {
+  border: 4px solid var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-yellow);
+  box-shadow: 6px 6px 0 0 var(--color-primary);
+  padding: 0.8rem 1.45rem;
+  font-family: var(--font-headline);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.page-shell {
+  position: relative;
+  overflow: hidden;
+  min-height: calc(100vh - 5rem);
+  padding: clamp(4.75rem, 8vw, 7rem) clamp(1rem, 5vw, 4rem) 5rem;
+}
+
+.hero {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 880px);
+  margin: 0 auto 5rem;
+  text-align: center;
+}
+
+.version-chip {
+  display: inline-block;
+  margin-bottom: 1.6rem;
+  border: 3px solid var(--color-primary);
+  background: var(--color-yellow);
+  padding: 0.35rem 1.1rem;
+  transform: rotate(-2deg);
+  font-family: var(--font-headline);
+  font-size: 0.95rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-family: var(--font-headline);
+  font-size: clamp(3.3rem, 10.4vw, 7rem);
+  font-weight: 900;
+  line-height: 0.93;
+  text-transform: uppercase;
+}
+
+h1 span {
+  display: block;
+}
+
+.stroke {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--color-primary);
+}
+
+.label {
+  width: fit-content;
+  margin: 0.25rem auto 0;
+  background: var(--color-primary);
+  color: var(--color-yellow);
+  padding: 0.2rem 1.15rem 0.5rem;
+  transform: rotate(1deg);
+}
+
+.hero p {
+  width: min(100%, 720px);
+  margin: 2rem auto 0;
+  border-left: 4px solid var(--color-red);
+  padding-left: 1.5rem;
+  color: var(--color-muted);
+  font-size: clamp(1.08rem, 2.4vw, 1.55rem);
+  line-height: 1.35;
+  text-align: left;
+}
+
+.protocols {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 1120px);
+  margin: 0 auto;
+}
+
+.protocols h2 {
+  display: inline-block;
+  margin: 0 0 2rem;
+  border-bottom: 4px solid var(--color-primary);
+  padding-bottom: 0.35rem;
+  font-family: var(--font-headline);
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.protocol-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.protocol-card {
+  position: relative;
+  min-height: 12.5rem;
+  border: 4px solid var(--color-primary);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.protocol-top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.protocol-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.protocol-card strong,
+.protocol-card small {
+  display: block;
+}
+
+.protocol-card strong {
+  font-family: var(--font-headline);
+  font-size: 1.45rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.protocol-card small {
+  margin-top: 0.35rem;
+  font-weight: 900;
+  color: inherit;
+  opacity: 0.72;
+}
+
+.protocol-card .icon {
+  font-family: "Material Symbols Outlined";
+  font-size: 2.5rem;
+  font-weight: 700;
+  font-variation-settings: "FILL" 1, "wght" 700, "GRAD" 0, "opsz" 24;
+}
+
+.protocol-card .x-mark {
+  font-family: var(--font-headline);
+  font-size: 2.5rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.arrow {
+  flex: 0 0 auto;
+  opacity: 0;
+  transition: opacity 160ms ease, transform 160ms ease;
+  transform: translateX(-0.5rem);
+}
+
+.protocol-card:hover .arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.card-youtube {
+  background: var(--color-bg);
+}
+
+.card-youtube::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5.75rem;
+  height: 5.75rem;
+  background: #ffdad6;
+}
+
+.card-youtube .icon {
+  color: var(--color-red);
+}
+
+.card-github {
+  grid-column: span 2;
+  background: var(--color-primary);
+  color: var(--color-yellow);
+}
+
+.card-github::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 204, 0, 0.22) 1px, transparent 1px);
+  background-size: 18px 18px;
+  opacity: 0.4;
+}
+
+.card-github > * {
+  position: relative;
+  z-index: 1;
+}
+
+.tag {
+  flex: 0 0 auto;
+  border: 2px solid var(--color-primary);
+  background: var(--color-yellow);
+  color: var(--color-primary);
+  padding: 0.35rem 0.6rem;
+  font-family: var(--font-headline);
+  font-size: 0.8rem;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.card-linkedin {
+  background: var(--color-blue);
+  color: white;
+}
+
+.card-linkedin::after {
+  content: "";
+  position: absolute;
+  left: -2rem;
+  bottom: -4rem;
+  width: 10rem;
+  height: 10rem;
+  background: rgba(26, 26, 26, 0.2);
+  transform: rotate(45deg);
+}
+
+.card-linkedin > * {
+  position: relative;
+  z-index: 1;
+}
+
+.card-x {
+  background: var(--color-bg);
+}
+
+.frame,
+.block,
+.diamond {
+  position: absolute;
+  pointer-events: none;
+}
+
+.frame--left {
+  top: 4rem;
+  left: -8rem;
+  width: 18rem;
+  height: 18rem;
+  border: 8px solid var(--color-primary);
+  border-radius: 0.45rem;
+  opacity: 0.1;
+}
+
+.block--yellow {
+  right: -7rem;
+  bottom: 8rem;
+  width: 26rem;
+  height: 26rem;
+  border: 4px solid var(--color-primary);
+  background: var(--color-yellow);
+  opacity: 0.25;
+  transform: rotate(12deg);
+}
+
+.diamond {
+  top: 45%;
+  left: 24%;
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid var(--color-primary);
+  background: var(--color-red);
+  opacity: 0.55;
+  transform: rotate(45deg);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  border-top: 4px solid var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-yellow);
+  padding: 2rem clamp(1rem, 4vw, 2rem);
+  font-family: var(--font-headline);
+  font-size: 0.85rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.footer nav {
+  display: flex;
+  gap: 1.4rem;
+}
+
+.footer a {
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (max-width: 880px) {
+  .topbar {
+    align-items: center;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .hire-button {
+    padding: 0.75rem 1rem;
+  }
+
+  .protocol-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-github {
+    grid-column: span 1;
+  }
+
+  .footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 560px) {
+  .brand {
+    font-size: 1.05rem;
+  }
+
+  .hire-button {
+    box-shadow: 4px 4px 0 0 var(--color-primary);
+    font-size: 0.85rem;
+  }
+
+  .page-shell {
+    padding-top: 3.75rem;
+  }
+
+  .stroke {
+    -webkit-text-stroke: 1px var(--color-primary);
+  }
+
+  .hero p {
+    padding-left: 1rem;
+  }
+}

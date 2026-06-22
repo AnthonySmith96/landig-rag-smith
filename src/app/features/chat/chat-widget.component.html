@@ -1,0 +1,89 @@
+<button class="chat-fab neo-action" type="button" (click)="open()" [class.chat-fab--hidden]="isOpen()" aria-label="Abrir terminal de IA">
+  <span class="material-symbols-outlined" aria-hidden="true">terminal</span>
+  <span class="notify-dot" aria-hidden="true"></span>
+</button>
+
+@if (isOpen()) {
+  <section class="chat-overlay" aria-label="Sesión terminal de IA">
+    <div class="aura" aria-hidden="true"></div>
+    <div class="chat-shell">
+      <header class="chat-header">
+        <h2>Sesión terminal IA</h2>
+        <button type="button" class="close-button" (click)="close()" aria-label="Cerrar chat">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
+      </header>
+
+      <div class="chat-layout">
+        <aside class="signal-panel neo-shadow" aria-label="Asistente de Anthony Smith">
+          <img src="/screen.png" alt="Visual del portafolio de Anthony Smith" loading="lazy">
+          <div class="signal-label">
+            <strong>TECH_CREATOR IA</strong>
+            <span><i aria-hidden="true"></i> En línea</span>
+          </div>
+        </aside>
+
+        <div class="chat-column">
+          <div class="message-feed neo-shadow" aria-live="polite">
+            <div class="system-line">SISTEMA: Inicialización completa. V22 en línea.</div>
+            @for (message of messages(); track message.id) {
+              <article class="message" [class.message--user]="message.role === 'user'" [class.message--system]="message.role === 'system'">
+                @if (message.role !== 'user') {
+                  <div class="avatar" aria-hidden="true">
+                    <span class="material-symbols-outlined">terminal</span>
+                  </div>
+                }
+                <p [class.out-of-bounds]="message.outOfBounds">&gt; {{ message.text }}</p>
+              </article>
+            }
+            @if (isLoading()) {
+              <article class="message">
+                <div class="avatar" aria-hidden="true">
+                  <span class="material-symbols-outlined">hourglass_empty</span>
+                </div>
+                <p>&gt; Procesando...</p>
+              </article>
+            }
+          </div>
+
+          @if (error()) {
+            <div class="error-line" role="status">{{ error() }}</div>
+          }
+
+          <app-popup-renderer [popup]="activePopup()"></app-popup-renderer>
+
+          @if (suggestedProjects().length > 0 || suggestedReels().length > 0) {
+            <div class="suggestion-grid">
+              @for (project of suggestedProjects(); track project.id) {
+                <a class="suggestion neo-action" [href]="project.url || '#portfolio'">
+                  <strong>{{ project.project_name }}</strong>
+                  <span>Proyecto</span>
+                </a>
+              }
+              @for (reel of suggestedReels(); track reel.id) {
+                <a class="suggestion suggestion--blue neo-action" [href]="reel.urls?.['youtube'] || reel.urls?.['url'] || '#reels'">
+                  <strong>{{ reel.title }}</strong>
+                  <span>Reel</span>
+                </a>
+              }
+            </div>
+          }
+
+          <div class="chat-input neo-shadow">
+            <span aria-hidden="true">&gt;</span>
+            <input
+              type="text"
+              [value]="draft()"
+              (input)="updateDraft($event)"
+              (keydown)="handleKeydown($event)"
+              [disabled]="isLoading()"
+              placeholder="Ejecuta un comando..."
+              aria-label="Mensaje para el asistente de IA de Anthony Smith">
+            <button type="button" class="send-button neo-action" (click)="send()" [disabled]="isLoading()">Enviar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div #turnstileHost class="turnstile-host" aria-hidden="true"></div>
+  </section>
+}

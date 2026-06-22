@@ -1,0 +1,99 @@
+<header class="topbar">
+  <a class="brand" href="/" aria-label="Inicio de Anthony Smith">TECH_CREATOR</a>
+  <nav class="nav-links" aria-label="Navegación principal">
+    <a href="#portfolio">Portafolio</a>
+    <a href="#reels">Guias</a>
+    <a href="#resources">Recursos</a>
+    <a class="active" href="#connect">Contacto</a>
+  </nav>
+  <button class="hire-button neo-action" type="button" (click)="openAssistant()">Contrátame</button>
+</header>
+
+<main class="page-shell">
+  <div class="frame frame--left" aria-hidden="true"></div>
+  <div class="block block--yellow" aria-hidden="true"></div>
+  <div class="diamond" aria-hidden="true"></div>
+
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="version-chip">v22.0 en línea</div>
+    <h1 id="hero-title">
+      Descifrando
+      <span class="stroke">la arquitectura</span>
+      <span class="label">del mañana</span>
+    </h1>
+    <p>
+      Construyo apps web escalables con criterio. Exploro Signals, control de flujo y estrategias con IA
+      para crear productos modernos, rápidos y mantenibles.
+    </p>
+  </section>
+
+  <section class="protocols" id="resources" aria-labelledby="protocols-title">
+    <h2 id="protocols-title">Protocolos de transmisión</h2>
+    <div class="protocol-grid">
+      <a class="protocol-card card-youtube neo-shadow neo-action" href="https://www.youtube.com/" target="_blank" rel="noreferrer">
+        <div class="protocol-top">
+          <span class="material-symbols-outlined icon" aria-hidden="true">smart_display</span>
+          <span class="arrow material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+        </div>
+        <span class="protocol-copy">
+          <strong>YouTube</strong>
+          <small>@tech_creator</small>
+        </span>
+      </a>
+
+      <a class="protocol-card card-github neo-shadow neo-action" href="https://github.com/" target="_blank" rel="noreferrer">
+        <div class="protocol-top">
+          <span class="material-symbols-outlined icon" aria-hidden="true">code</span>
+          <span class="tag">Código abierto</span>
+        </div>
+        <span class="protocol-copy">
+          <strong>GitHub</strong>
+          <small>github.com/techcreator</small>
+        </span>
+      </a>
+
+      <a class="protocol-card card-linkedin neo-shadow neo-action" href="https://www.linkedin.com/" target="_blank" rel="noreferrer">
+        <div class="protocol-top">
+          <span class="material-symbols-outlined icon" aria-hidden="true">work</span>
+          <span class="arrow material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+        </div>
+        <span class="protocol-copy">
+          <strong>LinkedIn</strong>
+          <small>/in/techcreator</small>
+        </span>
+      </a>
+
+      <a class="protocol-card card-x neo-shadow neo-action" href="https://x.com/" target="_blank" rel="noreferrer">
+        <div class="protocol-top">
+          <span class="x-mark" aria-hidden="true">X</span>
+          <span class="arrow material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+        </div>
+        <span class="protocol-copy">
+          <strong>X (Twitter)</strong>
+          <small>@tech_creator</small>
+        </span>
+      </a>
+    </div>
+  </section>
+
+  <div id="portfolio">
+    <app-portfolio-strip></app-portfolio-strip>
+  </div>
+
+  <div id="reels">
+    <app-reels-strip></app-reels-strip>
+  </div>
+
+  <app-contact-strip></app-contact-strip>
+</main>
+
+<footer class="footer">
+  <strong>BAUHAUS_DEV</strong>
+  <span>© 2026 BAUHAUS_DEV. Creado con geometría cruda.</span>
+  <nav aria-label="Navegación de pie de página">
+    <a href="/">Privacidad</a>
+    <a href="/">Términos</a>
+    <a href="/api/health">API</a>
+    <a href="/">Mapa</a>
+  </nav>
+</footer>
