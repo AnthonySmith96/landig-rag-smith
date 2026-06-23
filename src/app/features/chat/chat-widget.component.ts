@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, computed, inject, input, output, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, computed, effect, inject, input, output, signal, viewChild } from '@angular/core';
 
 import { ChatMessage, ChatPopup } from '../../core/models/chat.models';
 import { PortfolioProject } from '../../core/models/portfolio.models';
@@ -25,6 +25,7 @@ export class ChatWidgetComponent {
   private readonly pocketBase = inject(PocketBaseService);
   private readonly turnstile = inject(TurnstileService);
   private readonly turnstileHost = viewChild<ElementRef<HTMLDivElement>>('turnstileHost');
+  private readonly feedContainer = viewChild<ElementRef<HTMLDivElement>>('feedContainer');
   private readonly sessionId = makeSessionId();
 
   protected readonly draft = signal('');
@@ -56,6 +57,21 @@ export class ChatWidgetComponent {
 
   constructor() {
     void this.loadSuggestionsSource();
+
+    effect(() => {
+      const container = this.feedContainer()?.nativeElement;
+      this.messages();
+      this.isLoading();
+
+      if (container) {
+        setTimeout(() => {
+          container.scrollTo({
+            top: container.scrollHeight,
+            behavior: 'smooth'
+          });
+        }, 50);
+      }
+    });
   }
 
   protected close(): void {

@@ -40,7 +40,7 @@
         </aside>
 
         <div class="chat-column">
-          <div class="message-feed neo-shadow" aria-live="polite">
+          <div #feedContainer class="message-feed neo-shadow" aria-live="polite">
             <div class="system-line">SISTEMA: Inicialización completa. V22 en línea.</div>
             @for (message of messages(); track message.id) {
               <article class="message" [class.message--user]="message.role === 'user'" [class.message--system]="message.role === 'system'">

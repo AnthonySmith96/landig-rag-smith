@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
+import { environment } from '../../../environments/environment';
 import { ChatRequest, ChatResponse } from '../models/chat.models';
 
 @Injectable({ providedIn: 'root' })
@@ -15,6 +16,7 @@ export class ChatService {
       turnstile_token: turnstileToken
     };
 
-    return firstValueFrom(this.http.post<ChatResponse>('/api/custom/chat', body));
+    const baseUrl = environment.pocketBaseUrl || '';
+    return firstValueFrom(this.http.post<ChatResponse>(`${baseUrl}/api/custom/chat`, body));
   }
 }

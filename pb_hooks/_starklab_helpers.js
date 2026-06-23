@@ -84,11 +84,14 @@ function handleChat(e) {
     logData.retrieved_context = retrieval.logContext;
     logData.top_score = retrieval.topScore;
 
+    // Bypassed pre-filter check as per user request to allow chatbot to handle all messages directly via LLM.
+    /*
     if (retrieval.topScore < config.min_similarity_score || retrieval.context.length === 0) {
       logData.latency_ms = Date.now() - startedAt;
       writeChatLog(e.app, logData);
       return e.json(200, fallbackResponse());
     }
+    */
 
     const llmResult = callConfiguredLlm(config, message, retrieval.contextText);
     logData.provider = llmResult.provider;
@@ -709,7 +712,7 @@ function writeChatLog(app, data) {
     record.set("out_of_bounds", data.out_of_bounds === true);
     record.set("error", safeString(data.error).slice(0, 500));
     app.save(record);
-  } catch {
+  } catch (e) {
     // Logging must not break the endpoint.
   }
 }
@@ -849,54 +852,30 @@ function queryTokens(value) {
       seen[word] = true;
       tokens.push(word);
     }
-    if (tokens.length >= 20) {
-      break;
-    }
   }
   return tokens;
 }
 
 function lexicalOverlap(tokens, searchText) {
-  if (!tokens.length || !searchText) {
+  if (tokens.length === 0 || !searchText) {
     return 0;
   }
-  let hits = 0;
+  let matches = 0;
   for (const token of tokens) {
     if (searchText.indexOf(token) !== -1) {
-      hits += 1;
+      matches += 1;
     }
   }
-  return hits / tokens.length;
-}
-
-function isValidVector(value) {
-  if (!Array.isArray(value) || value.length === 0) {
-    return false;
-  }
-  for (const item of value) {
-    if (typeof item !== "number" || !Number.isFinite(item)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-function normalizeVector(vector) {
-  let total = 0;
-  for (const value of vector) {
-    total += value * value;
-  }
-  const magnitude = Math.sqrt(total);
-  if (!magnitude) {
-    throw new Error("embedding_zero_vector");
-  }
-  return vector.map((value) => value / magnitude);
+  return matches / tokens.length;
 }
 
 function dotProduct(a, b) {
-  const length = Math.min(a.length, b.length);
+  if (!a || !b || a.length !== b.length) {
+    return 0;
+  }
   let total = 0;
-  for (let index = 0; index < length; index += 1) {
+  const len = a.length;
+  for (let index = 0; index < len; index += 1) {
     total += a[index] * b[index];
   }
   return total;
@@ -948,6 +927,20 @@ function hasField(record, fieldName) {
   } catch {
     return false;
   }
+}
+
+function isValidVector(value) {
+  return Array.isArray(value) && value.length > 0 && typeof value[0] === 'number';
+}
+
+function normalizeVector(vector) {
+  let sum = 0;
+  for (let i = 0; i < vector.length; i++) {
+    sum += vector[i] * vector[i];
+  }
+  const magnitude = Math.sqrt(sum);
+  if (magnitude === 0) return vector;
+  return vector.map(x => x / magnitude);
 }
 
 module.exports = {
