@@ -20,8 +20,12 @@ migrate((app) => {
     }
   }
 
-  if (field && field.options) {
-    field.options.values = ["youtube", "github", "linkedin", "x", "instagram", "tiktok", "standard"];
+  if (field) {
+    if (field.options && field.options.values !== undefined) {
+      field.options.values = ["youtube", "github", "linkedin", "x", "instagram", "tiktok", "standard"];
+    } else {
+      field.values = ["youtube", "github", "linkedin", "x", "instagram", "tiktok", "standard"];
+    }
     app.save(collection);
   }
 }, (app) => {
@@ -46,8 +50,12 @@ migrate((app) => {
     }
   }
 
-  if (field && field.options) {
-    field.options.values = ["youtube", "github", "linkedin", "x", "standard"];
+  if (field) {
+    if (field.options && field.options.values !== undefined) {
+      field.options.values = ["youtube", "github", "linkedin", "x", "standard"];
+    } else {
+      field.values = ["youtube", "github", "linkedin", "x", "standard"];
+    }
     app.save(collection);
   }
 });
