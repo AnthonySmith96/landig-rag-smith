@@ -14,6 +14,7 @@ import { ReelsStripComponent } from '../reels/reels-strip.component';
 })
 export class LandingComponent {
   readonly openChat = output<void>();
+  readonly openLegal = output<string>();
 
   protected openAssistant(): void {
     this.openChat.emit();

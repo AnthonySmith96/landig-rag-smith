@@ -55,6 +55,18 @@ export class PocketBaseService {
       published_at: asOptionalString(record['published_at'])
     }));
   }
+
+  async getLegalDocument(key: string): Promise<{ title: string; content: string } | null> {
+    try {
+      const record = await this.client.collection('legal_documents').getFirstListItem(`key = "${key}" && is_active = true`);
+      return {
+        title: String(record['title'] ?? ''),
+        content: String(record['content'] ?? '')
+      };
+    } catch {
+      return null;
+    }
+  }
 }
 
 function asOptionalString(value: unknown): string | undefined {
