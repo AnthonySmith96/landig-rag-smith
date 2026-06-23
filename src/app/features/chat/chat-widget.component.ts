@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, computed, effect, inject, input, output, signal, viewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, computed, effect, inject, input, output, signal, viewChild } from '@angular/core';
 
 import { ChatMessage, ChatPopup } from '../../core/models/chat.models';
 import { PortfolioProject } from '../../core/models/portfolio.models';
@@ -16,7 +16,7 @@ import { PopupRendererComponent } from './popup-renderer.component';
   styleUrl: './chat-widget.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ChatWidgetComponent {
+export class ChatWidgetComponent implements AfterViewInit {
   readonly isOpen = input(false);
   readonly opened = output<void>();
   readonly closed = output<void>();
@@ -152,6 +152,41 @@ export class ChatWidgetComponent {
     } catch {
       this.projects.set([]);
       this.reels.set([]);
+    }
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.updateFabPosition();
+    }, 0);
+  }
+
+  @HostListener('window:scroll', [])
+  onWindowScroll(): void {
+    this.updateFabPosition();
+  }
+
+  @HostListener('window:resize', [])
+  onWindowResize(): void {
+    this.updateFabPosition();
+  }
+
+  private updateFabPosition(): void {
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+      return;
+    }
+    const fab = document.querySelector('.chat-fab') as HTMLElement;
+    const footer = document.querySelector('.footer');
+    if (!fab || !footer) return;
+
+    const footerRect = footer.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+
+    if (footerRect.top < viewportHeight) {
+      const visibleFooterHeight = viewportHeight - footerRect.top;
+      fab.style.bottom = `${visibleFooterHeight + 24}px`;
+    } else {
+      fab.style.bottom = '';
     }
   }
 }
