@@ -4,6 +4,7 @@ import PocketBase, { RecordModel } from 'pocketbase';
 import { environment } from '../../../environments/environment';
 import { PortfolioProject } from '../models/portfolio.models';
 import { Reel } from '../models/reels.models';
+import { SocialProtocol } from '../models/social.models';
 
 @Injectable({ providedIn: 'root' })
 export class PocketBaseService {
@@ -66,6 +67,24 @@ export class PocketBaseService {
     } catch {
       return null;
     }
+  }
+
+  async getSocialProtocols(): Promise<SocialProtocol[]> {
+    const records = await this.client.collection('social_protocols').getFullList<RecordModel>({
+      filter: 'is_active = true',
+      sort: 'priority'
+    });
+
+    return records.map((record) => ({
+      id: record.id,
+      title: String(record['title'] ?? ''),
+      handle: String(record['handle'] ?? ''),
+      url: String(record['url'] ?? ''),
+      icon: String(record['icon'] ?? ''),
+      cardStyle: record['card_style'] as 'youtube' | 'github' | 'linkedin' | 'x' | 'standard',
+      badge: asOptionalString(record['badge']),
+      priority: Number(record['priority'] ?? 0)
+    }));
   }
 }
 
