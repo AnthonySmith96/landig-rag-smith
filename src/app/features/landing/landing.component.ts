@@ -15,7 +15,6 @@ import { ReelsStripComponent } from '../reels/reels-strip.component';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LandingComponent {
-  readonly openChat = output<void>();
   readonly openLegal = output<string>();
 
   private readonly pocketBase = inject(PocketBaseService);
@@ -23,10 +22,6 @@ export class LandingComponent {
 
   constructor() {
     void this.loadSocialProtocols();
-  }
-
-  protected openAssistant(): void {
-    this.openChat.emit();
   }
 
   private async loadSocialProtocols(): Promise<void> {
