@@ -1,5 +1,5 @@
 <header class="topbar">
-  <a class="brand" href="/" aria-label="Inicio de Anthony Smith">TECH_CREATOR</a>
+  <a class="brand" href="/" aria-label="Inicio de Anthony Smith">Anthony Smith</a>
   <nav class="nav-links" aria-label="Navegación principal">
     <a href="#portfolio">Portafolio</a>
     <a href="#reels">Guias</a>
@@ -37,40 +37,40 @@
         </div>
         <span class="protocol-copy">
           <strong>YouTube</strong>
-          <small>@tech_creator</small>
+          <small>@anthonysmith</small>
         </span>
       </a>
 
-      <a class="protocol-card card-github neo-shadow neo-action" href="https://github.com/" target="_blank" rel="noreferrer">
+      <a class="protocol-card card-github neo-shadow neo-action" href="https://github.com/cyberindustree" target="_blank" rel="noreferrer">
         <div class="protocol-top">
           <span class="material-symbols-outlined icon" aria-hidden="true">code</span>
           <span class="tag">Código abierto</span>
         </div>
         <span class="protocol-copy">
           <strong>GitHub</strong>
-          <small>github.com/techcreator</small>
+          <small>github.com/cyberindustree</small>
         </span>
       </a>
 
-      <a class="protocol-card card-linkedin neo-shadow neo-action" href="https://www.linkedin.com/" target="_blank" rel="noreferrer">
+      <a class="protocol-card card-linkedin neo-shadow neo-action" href="https://www.linkedin.com/in/anthonysmith" target="_blank" rel="noreferrer">
         <div class="protocol-top">
           <span class="material-symbols-outlined icon" aria-hidden="true">work</span>
           <span class="arrow material-symbols-outlined" aria-hidden="true">arrow_forward</span>
         </div>
         <span class="protocol-copy">
           <strong>LinkedIn</strong>
-          <small>/in/techcreator</small>
+          <small>/in/anthonysmith</small>
         </span>
       </a>
 
-      <a class="protocol-card card-x neo-shadow neo-action" href="https://x.com/" target="_blank" rel="noreferrer">
+      <a class="protocol-card card-x neo-shadow neo-action" href="https://x.com/anthonysmith" target="_blank" rel="noreferrer">
         <div class="protocol-top">
           <span class="x-mark" aria-hidden="true">X</span>
           <span class="arrow material-symbols-outlined" aria-hidden="true">arrow_forward</span>
         </div>
         <span class="protocol-copy">
           <strong>X (Twitter)</strong>
-          <small>@tech_creator</small>
+          <small>@anthonysmith</small>
         </span>
       </a>
     </div>
@@ -88,12 +88,10 @@
 </main>
 
 <footer class="footer">
-  <strong>BAUHAUS_DEV</strong>
-  <span>© 2026 BAUHAUS_DEV. Creado con geometría cruda.</span>
+  <strong>CyberIndustree</strong>
+  <span>© 2026 CyberIndustree. Creado con geometría cruda.</span>
   <nav aria-label="Navegación de pie de página">
-    <a href="/">Privacidad</a>
-    <a href="/">Términos</a>
-    <a href="/api/health">API</a>
-    <a href="/">Mapa</a>
+    <button type="button" class="footer-btn" (click)="openLegal.emit('privacy')">Privacidad</button>
+    <button type="button" class="footer-btn" (click)="openLegal.emit('terms')">Términos</button>
   </nav>
 </footer>
