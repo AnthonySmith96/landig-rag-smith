@@ -79,19 +79,7 @@
   text-align: center;
 }
 
-.version-chip {
-  display: inline-block;
-  margin-bottom: 1.6rem;
-  border: 3px solid var(--color-primary);
-  background: var(--color-yellow);
-  padding: 0.35rem 1.1rem;
-  transform: rotate(-2deg);
-  font-family: var(--font-headline);
-  font-size: 0.95rem;
-  font-weight: 900;
-  letter-spacing: 0;
-  text-transform: uppercase;
-}
+
 
 h1 {
   margin: 0;
