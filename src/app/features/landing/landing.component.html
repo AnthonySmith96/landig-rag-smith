@@ -29,49 +29,27 @@
   <section class="protocols" id="resources" aria-labelledby="protocols-title">
     <h2 id="protocols-title">Protocolos de transmisión</h2>
     <div class="protocol-grid">
-      <a class="protocol-card card-youtube neo-shadow neo-action" href="https://www.youtube.com/" target="_blank" rel="noreferrer">
-        <div class="protocol-top">
-          <span class="material-symbols-outlined icon" aria-hidden="true">smart_display</span>
-          <span class="arrow material-symbols-outlined" aria-hidden="true">arrow_forward</span>
-        </div>
-        <span class="protocol-copy">
-          <strong>YouTube</strong>
-          <small>@anthonysmith</small>
-        </span>
-      </a>
-
-      <a class="protocol-card card-github neo-shadow neo-action" href="https://github.com/cyberindustree" target="_blank" rel="noreferrer">
-        <div class="protocol-top">
-          <span class="material-symbols-outlined icon" aria-hidden="true">code</span>
-          <span class="tag">Código abierto</span>
-        </div>
-        <span class="protocol-copy">
-          <strong>GitHub</strong>
-          <small>github.com/cyberindustree</small>
-        </span>
-      </a>
-
-      <a class="protocol-card card-linkedin neo-shadow neo-action" href="https://www.linkedin.com/in/anthonysmith" target="_blank" rel="noreferrer">
-        <div class="protocol-top">
-          <span class="material-symbols-outlined icon" aria-hidden="true">work</span>
-          <span class="arrow material-symbols-outlined" aria-hidden="true">arrow_forward</span>
-        </div>
-        <span class="protocol-copy">
-          <strong>LinkedIn</strong>
-          <small>/in/anthonysmith</small>
-        </span>
-      </a>
-
-      <a class="protocol-card card-x neo-shadow neo-action" href="https://x.com/anthonysmith" target="_blank" rel="noreferrer">
-        <div class="protocol-top">
-          <span class="x-mark" aria-hidden="true">X</span>
-          <span class="arrow material-symbols-outlined" aria-hidden="true">arrow_forward</span>
-        </div>
-        <span class="protocol-copy">
-          <strong>X (Twitter)</strong>
-          <small>@anthonysmith</small>
-        </span>
-      </a>
+      @for (protocol of protocols(); track protocol.id) {
+        <a class="protocol-card card-{{ protocol.cardStyle }} neo-shadow neo-action" [href]="protocol.url" target="_blank" rel="noreferrer">
+          <div class="protocol-top">
+            @if (protocol.cardStyle === 'x') {
+              <span class="x-mark" aria-hidden="true">X</span>
+            } @else {
+              <span class="material-symbols-outlined icon" aria-hidden="true">{{ protocol.icon }}</span>
+            }
+            
+            @if (protocol.badge) {
+              <span class="tag">{{ protocol.badge }}</span>
+            } @else {
+              <span class="arrow material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+            }
+          </div>
+          <span class="protocol-copy">
+            <strong>{{ protocol.title }}</strong>
+            <small>{{ protocol.handle }}</small>
+          </span>
+        </a>
+      }
     </div>
   </section>
 
