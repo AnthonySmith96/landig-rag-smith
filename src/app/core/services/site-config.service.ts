@@ -66,7 +66,7 @@ export class SiteConfigService {
       this.contactCta.set(config.contact_cta);
       this.contactEmail.set(config.contact_email);
       this.personaName.set(config.persona_name);
-      this.avatarUrl.set(config.avatar_url);
+      this.avatarUrl.set(config.avatar_url ? `${baseUrl}${config.avatar_url}` : null);
 
       if (config.site_title) {
         this.titleService.setTitle(config.site_title);
