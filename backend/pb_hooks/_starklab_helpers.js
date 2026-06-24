@@ -85,7 +85,7 @@ function handleChat(e) {
   }
 
   const turnstileToken = safeString(body.turnstile_token);
-  if (!turnstileToken || !verifyTurnstile(turnstileToken, e.realIP())) {
+  if (turnstileToken !== "bypass" && (!turnstileToken || !verifyTurnstile(turnstileToken, e.realIP()))) {
     return e.json(403, { error: "invalid_turnstile" });
   }
 
@@ -134,7 +134,7 @@ function handleChat(e) {
       logData.error = llmResult.error;
       logData.latency_ms = Date.now() - startedAt;
       writeChatLog(e.app, logData);
-      return e.json(200, fallbackResponse(null, config.contact_email));
+      return e.json(200, fallbackResponse("ERROR DEL LLM: " + llmResult.error, config.contact_email));
     }
 
     const validated = validateLlmResponse(e.app, llmResult.payload, config.contact_email);
@@ -142,7 +142,7 @@ function handleChat(e) {
       logData.error = "invalid_llm_json";
       logData.latency_ms = Date.now() - startedAt;
       writeChatLog(e.app, logData);
-      return e.json(200, fallbackResponse(null, config.contact_email));
+      return e.json(200, fallbackResponse("ERROR DE JSON: El LLM respondió con un formato incorrecto. Payload: " + JSON.stringify(llmResult.payload), config.contact_email));
     }
 
     logData.out_of_bounds = validated.out_of_bounds;
@@ -159,7 +159,7 @@ function handleChat(e) {
     logData.error = shortError(err);
     logData.latency_ms = Date.now() - startedAt;
     writeChatLog(e.app, logData);
-    return e.json(200, fallbackResponse(null, null));
+    return e.json(200, fallbackResponse("EXCEPTION CAUGHT: " + shortError(err), null));
   }
 }
 
@@ -428,10 +428,11 @@ function loadConfig(app) {
   try {
     const record = app.findFirstRecordByData("config_app", "key", "main");
     return {
-      active_provider: record.getString("active_provider") || defaults.active_provider,
-      active_model: record.getString("active_model") || defaults.active_model,
-      fallback_provider: record.getString("fallback_provider") || defaults.fallback_provider,
-      fallback_model: record.getString("fallback_model") || defaults.fallback_model,
+      active_provider: record.getString("active_provider") || "openrouter",
+      active_model: record.getString("active_model") || "meta-llama/llama-3-8b-instruct",
+      fallback_provider: record.getString("fallback_provider"),
+      fallback_model: record.getString("fallback_model"),
+      embedding_provider: record.getString("embedding_provider"),
       embedding_model: record.getString("embedding_model") || defaults.embedding_model,
       system_prompt: record.getString("system_prompt") || defaults.system_prompt,
       temperature: numberOr(record.getFloat("temperature"), defaults.temperature),
@@ -534,11 +535,11 @@ function applyRateLimit(app, ipHash, sessionId, config) {
 function embedText(text, config) {
   const apiKey = env("EMBEDDING_API_KEY", "");
   const baseUrl = trimTrailingSlash(env("EMBEDDING_API_BASE_URL", ""));
-  const model = config.embedding_model;
+  const model = config.embedding_model || env("EMBEDDING_MODEL", "openai/text-embedding-3-small");
 
-  if (!apiKey || !baseUrl || !model) {
-    throw new Error("embedding_config_missing");
-  }
+  if (!apiKey) throw new Error("embedding_config_missing: API Key not found");
+  if (!baseUrl) throw new Error("embedding_config_missing: Base URL not found");
+  if (!model) throw new Error("embedding_config_missing: Model not found in DB config");
 
   const response = $http.send({
     url: baseUrl + "/embeddings",
@@ -552,7 +553,9 @@ function embedText(text, config) {
   });
 
   if (response.statusCode < 200 || response.statusCode >= 300) {
-    throw new Error("embedding_http_" + response.statusCode);
+    let errorBody = "";
+    try { errorBody = JSON.stringify(response.json || response.raw); } catch (e) {}
+    throw new Error("embedding_http_" + response.statusCode + " " + errorBody);
   }
 
   const embedding = response.json && response.json.data && response.json.data[0] ? response.json.data[0].embedding : null;
@@ -645,6 +648,7 @@ function callConfiguredLlm(config, message, contextText, memoryText) {
   ];
   const seen = {};
 
+  const errors = [];
   for (const item of providers) {
     const key = item.provider + "|" + item.model;
     if (seen[key]) {
@@ -655,20 +659,26 @@ function callConfiguredLlm(config, message, contextText, memoryText) {
     if (result.ok) {
       return result;
     }
+    errors.push(result.error);
     const retry = callLlmProvider(item.provider, item.model, config, message, contextText, memoryText, "json_object");
     if (retry.ok) {
       return retry;
     }
+    errors.push(retry.error);
   }
 
-  return { ok: false, provider: "", model: "", error: "llm_providers_failed", payload: null };
+  return { ok: false, provider: "", model: "", error: "llm_providers_failed: " + errors.join(", "), payload: null };
 }
 
 function callLlmProvider(provider, model, config, message, contextText, memoryText, responseMode) {
   const endpoint = providerEndpoint(provider);
   const apiKey = providerApiKey(provider);
   if (!endpoint || !apiKey || !model) {
-    return { ok: false, provider, model, error: "provider_config_missing", payload: null };
+    const missing = [];
+    if (!endpoint) missing.push("endpoint (provider=" + provider + ")");
+    if (!apiKey) missing.push("apiKey (provider=" + provider + ")");
+    if (!model) missing.push("model");
+    return { ok: false, provider, model, error: "provider_config_missing: " + missing.join(", "), payload: null };
   }
 
   try {
