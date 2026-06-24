@@ -25,7 +25,9 @@ if (fs.existsSync(envPath)) {
 }
 
 console.log('Iniciando PocketBase...');
-const pb = spawn(path.join(__dirname, 'pocketbase.exe'), ['serve'], {
+const isWindows = process.platform === 'win32';
+const pbExecutable = isWindows ? 'pocketbase.exe' : 'pocketbase';
+const pb = spawn(path.join(__dirname, pbExecutable), ['serve'], {
   stdio: 'inherit',
   env: process.env
 });
