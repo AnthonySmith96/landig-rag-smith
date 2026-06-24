@@ -7,9 +7,10 @@ node_modules/
 /.cache
 
 # PocketBase local database and binaries
-/pb_data/
-pocketbase.exe
-pocketbase
+/backend/pb_data/
+/backend/pocketbase.exe
+/backend/pocketbase
+/backend/pb_public/
 
 # Environment variables and secrets
 .env

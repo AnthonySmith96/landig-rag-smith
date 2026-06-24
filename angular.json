@@ -20,7 +20,7 @@
           "builder": "@angular/build:application",
           "options": {
             "outputPath": {
-              "base": "pb_public",
+              "base": "backend/pb_public",
               "browser": ""
             },
             "index": "src/index.html",

@@ -13,9 +13,6 @@
     "target": "ES2022",
     "module": "ES2022",
     "moduleResolution": "bundler",
-    "paths": {
-      "pocketbase": ["./node_modules/pocketbase"]
-    },
     "useDefineForClassFields": false,
     "lib": [
       "ES2022",

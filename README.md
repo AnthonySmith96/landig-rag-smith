@@ -121,6 +121,18 @@ graph TD
     B -->|Sanitized Result| A
 ```
 
+### Estructura de Carpetas
+```text
+├── backend/                   # Backend aislado
+│   ├── pb_hooks/              # Lógica del servidor (PocketBase Goja hooks)
+│   ├── pb_migrations/         # Migraciones y Seeds de datos
+│   ├── pb_public/             # Frontend compilado para producción
+│   └── pocketbase             # Binario ejecutable de PocketBase
+├── src/                       # Código fuente de Angular 22
+├── .env.example               # Plantilla de variables de entorno
+└── start_pb.cjs               # Script Node para inyectar .env y arrancar PB en backend/
+```
+
 ## 🔒 Security
 
 * **Rate Limiting**: Límites en memoria basados en hashes de IP.
