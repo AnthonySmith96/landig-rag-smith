@@ -1,9 +1,11 @@
-# 🚀 Open AI Agent Portfolio & Chatbot
+# 🚀 Anthony Smith's AI Agent & Portfolio (Forkable Edition)
 
 [![Angular](https://img.shields.io/badge/Angular-22.0-DD0031.svg?logo=angular)](https://angular.dev/)
 [![PocketBase](https://img.shields.io/badge/PocketBase-0.22.x-black.svg?logo=sqlite)](https://pocketbase.io/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6.svg?logo=typescript)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+> **💡 Nota del creador:** Originalmente construí este sistema exclusivamente para ser mi portafolio personal y mi agente de IA para responder dudas en redes sociales. Decidí abrir el código y hacerlo 100% configurable porque muchos me lo pidieron. Lo libero a la comunidad "tal cual" (as-is); si te sirve, ¡date vuelo y úsalo! Solo recuerda que es un proyecto personal open-source, así que no ofrezco soporte técnico 24/7 😅.
 
 Un portafolio interactivo y chatbot RAG (Retrieval-Augmented Generation) completamente configurable desde una interfaz gráfica. **Construido para ser forkeado**. 
 
