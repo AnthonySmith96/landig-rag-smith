@@ -421,6 +421,18 @@ h1 span {
   text-decoration: none;
 }
 
+.brand-link {
+  font-weight: 900;
+  color: var(--color-yellow);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.brand-link:hover {
+  color: white;
+}
+
 .footer-btn {
   background: none;
   border: none;

@@ -63,8 +63,7 @@
 </main>
 
 <footer class="footer">
-  <strong>{{ siteConfig.footerBrand() }}</strong>
-  <span>{{ siteConfig.footerText() }}</span>
+  <span>{{ siteConfig.footerText() }} <a href="https://cyberindustree.org" target="_blank" rel="noreferrer" class="brand-link">{{ siteConfig.footerBrand() }}</a></span>
   <nav aria-label="Navegación de pie de página">
     <button type="button" class="footer-btn" (click)="openLegal.emit('privacy')">Privacidad</button>
     <button type="button" class="footer-btn" (click)="openLegal.emit('terms')">Términos</button>

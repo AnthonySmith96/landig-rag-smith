@@ -35,7 +35,7 @@ migrate((app) => {
     { name: "welcome_message", default: "¿Qué onda? Soy Anthony 👋 Pregúntame lo que quieras sobre tech, IA, desarrollo de software o los temas de mis reels." },
     { name: "chat_header", default: "Chat con Anthony" },
     { name: "footer_brand", default: "CyberIndustree" },
-    { name: "footer_text", default: "Hecho con 🖤 por Cyberindustree" },
+    { name: "footer_text", default: "Hecho con 🖤 por " },
     { name: "contact_tagline", default: "Arquitectura técnica, sistemas Angular y productos con IA aplicada." },
     { name: "contact_cta", default: "Hablemos" }
   ];
