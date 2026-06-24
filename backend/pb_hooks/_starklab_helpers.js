@@ -428,12 +428,12 @@ function loadConfig(app) {
   try {
     const record = app.findFirstRecordByData("config_app", "key", "main");
     return {
-      active_provider: record.getString("active_provider") || "openrouter",
-      active_model: record.getString("active_model") || "meta-llama/llama-3-8b-instruct",
+      active_provider: record.getString("active_provider"),
+      active_model: record.getString("active_model"),
       fallback_provider: record.getString("fallback_provider"),
       fallback_model: record.getString("fallback_model"),
       embedding_provider: record.getString("embedding_provider"),
-      embedding_model: record.getString("embedding_model") || defaults.embedding_model,
+      embedding_model: record.getString("embedding_model"),
       system_prompt: record.getString("system_prompt") || defaults.system_prompt,
       temperature: numberOr(record.getFloat("temperature"), defaults.temperature),
       max_tokens: numberOr(record.getFloat("max_tokens"), defaults.max_tokens),
@@ -535,7 +535,7 @@ function applyRateLimit(app, ipHash, sessionId, config) {
 function embedText(text, config) {
   const apiKey = env("EMBEDDING_API_KEY", "");
   const baseUrl = trimTrailingSlash(env("EMBEDDING_API_BASE_URL", ""));
-  const model = config.embedding_model || env("EMBEDDING_MODEL", "openai/text-embedding-3-small");
+  const model = config.embedding_model;
 
   if (!apiKey) throw new Error("embedding_config_missing: API Key not found");
   if (!baseUrl) throw new Error("embedding_config_missing: Base URL not found");
