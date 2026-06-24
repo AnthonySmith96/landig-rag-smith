@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { SiteConfigService } from '../../core/services/site-config.service';
 
 @Component({
   selector: 'app-contact-strip',
@@ -7,9 +8,9 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
     <section class="contact-band" id="connect" aria-labelledby="contact-title">
       <div>
         <h2 id="contact-title">Contacto</h2>
-        <p>Arquitectura técnica, sistemas Angular y productos con IA aplicada.</p>
+        <p>{{ siteConfig.contactTagline() }}</p>
       </div>
-      <a class="neo-action" href="mailto:contact@anthonysmith.org">Hablemos</a>
+      <a class="neo-action" [href]="'mailto:' + siteConfig.contactEmail()">{{ siteConfig.contactCta() }}</a>
     </section>
   `,
   styles: `
@@ -82,4 +83,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ContactStripComponent {}
+export class ContactStripComponent {
+  protected readonly siteConfig = inject(SiteConfigService);
+}

@@ -1,11 +1,11 @@
 <header class="topbar">
-  <a class="brand" href="/" aria-label="Inicio de Anthony Smith">Anthony Smith</a>
+  <a class="brand" href="/" [attr.aria-label]="'Inicio de ' + siteConfig.brandName()">{{ siteConfig.brandName() }}</a>
   <nav class="nav-links" aria-label="Navegación principal">
     <a href="#resources">Recursos</a>
     <a href="#portfolio">Portafolio</a>
     <a href="#reels">Guias</a>
   </nav>
-  <a class="hire-button neo-action" href="#connect">Contrátame</a>
+  <a class="hire-button neo-action" href="#connect">{{ siteConfig.ctaText() }}</a>
 </header>
 
 <main class="page-shell">
@@ -15,14 +15,12 @@
 
   <section class="hero" aria-labelledby="hero-title">
     <h1 id="hero-title">
-      Diseñando
-      <span class="stroke">el software</span>
-      <span class="label">del mañana</span>
+      {{ siteConfig.heroLine1() }}
+      <span class="stroke">{{ siteConfig.heroLine2() }}</span>
+      <span class="label">{{ siteConfig.heroLine3() }}</span>
     </h1>
     <p>
-      Experto en arquitectura e implementación de software empresarial potenciado por Inteligencia Artificial. 
-      Integración de chatbots, agentes autónomos y arquitecturas de alto rendimiento para desplegar ecosistemas 
-      escalables y eficientes.
+      {{ siteConfig.heroParagraph() }}
     </p>
   </section>
 
@@ -65,8 +63,8 @@
 </main>
 
 <footer class="footer">
-  <strong>CyberIndustree</strong>
-  <span>Hecho con 🖤 por Cyberindustree</span>
+  <strong>{{ siteConfig.footerBrand() }}</strong>
+  <span>{{ siteConfig.footerText() }}</span>
   <nav aria-label="Navegación de pie de página">
     <button type="button" class="footer-btn" (click)="openLegal.emit('privacy')">Privacidad</button>
     <button type="button" class="footer-btn" (click)="openLegal.emit('terms')">Términos</button>

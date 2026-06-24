@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 
+import { SiteConfigService } from './core/services/site-config.service';
 import { ChatWidgetComponent } from './features/chat/chat-widget.component';
 import { LandingComponent } from './features/landing/landing.component';
 import { LegalModalComponent } from './shared/components/legal-modal.component';
@@ -16,8 +17,14 @@ import { LegalModalComponent } from './shared/components/legal-modal.component';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
+  private readonly siteConfig = inject(SiteConfigService);
+
   protected readonly chatOpen = signal(false);
   protected readonly legalKey = signal<string | null>(null);
+
+  constructor() {
+    void this.siteConfig.loadConfig();
+  }
 
   protected openChat(): void {
     this.chatOpen.set(true);

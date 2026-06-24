@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, output, signal } from '@ang
 
 import { SocialProtocol } from '../../core/models/social.models';
 import { PocketBaseService } from '../../core/services/pocketbase.service';
+import { SiteConfigService } from '../../core/services/site-config.service';
 import { ContactStripComponent } from '../contact/contact-strip.component';
 import { PortfolioStripComponent } from '../portfolio/portfolio-strip.component';
 import { ReelsStripComponent } from '../reels/reels-strip.component';
@@ -15,9 +16,11 @@ import { ReelsStripComponent } from '../reels/reels-strip.component';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LandingComponent {
-  readonly openLegal = output<string>();
+  readonly openLegal = output<'privacy' | 'terms'>();
 
+  protected readonly siteConfig = inject(SiteConfigService);
   private readonly pocketBase = inject(PocketBaseService);
+
   protected readonly protocols = signal<SocialProtocol[]>([]);
 
   constructor() {

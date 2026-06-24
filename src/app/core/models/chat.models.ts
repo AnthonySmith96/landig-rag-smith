@@ -1,6 +1,7 @@
 export interface ChatRequest {
   message: string;
   session_id?: string;
+  user_id?: string;
   turnstile_token: string;
 }
 
@@ -32,4 +33,5 @@ export interface ChatMessage {
   text: string;
   createdAt: number;
   outOfBounds?: boolean;
+  cta?: { label: string; href: string };
 }

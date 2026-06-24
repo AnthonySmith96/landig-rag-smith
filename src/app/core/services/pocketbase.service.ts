@@ -86,7 +86,31 @@ export class PocketBaseService {
       priority: Number(record['priority'] ?? 0)
     }));
   }
+
+  async getAvatarUrl(): Promise<string | null> {
+    try {
+      const record = await this.client.collection('config_app').getFirstListItem('key = "main"');
+      const avatarFile = record['avatar'];
+      if (avatarFile && typeof avatarFile === 'string' && avatarFile.length > 0) {
+        return this.client.files.getURL(record, avatarFile);
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  async getContactEmail(): Promise<string | null> {
+    try {
+      const record = await this.client.collection('config_app').getFirstListItem('key = "main"');
+      const email = String(record['contact_email'] ?? '');
+      return email.length > 0 ? email : null;
+    } catch {
+      return null;
+    }
+  }
 }
+
 
 function asOptionalString(value: unknown): string | undefined {
   return typeof value === 'string' && value.length > 0 ? value : undefined;

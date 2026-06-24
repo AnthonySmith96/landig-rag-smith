@@ -136,8 +136,6 @@
   height: 100%;
   min-height: 22rem;
   object-fit: cover;
-  mix-blend-mode: luminosity;
-  opacity: 0.9;
 }
 
 .signal-label {
@@ -212,6 +210,36 @@
   display: flex;
   align-items: flex-start;
   gap: 1rem;
+}
+
+.message-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.cta-button {
+  display: inline-block;
+  align-self: flex-start;
+  border: 3px solid var(--color-primary);
+  background: var(--color-blue);
+  color: white;
+  box-shadow: 4px 4px 0 0 var(--color-primary);
+  padding: 0.6rem 1.2rem;
+  font-family: var(--font-headline);
+  font-size: 0.85rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 120ms ease, transform 120ms ease;
+}
+
+.cta-button:hover,
+.cta-button:focus-visible {
+  background: var(--color-red);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 0 var(--color-primary);
 }
 
 .message--user {

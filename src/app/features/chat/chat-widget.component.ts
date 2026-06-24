@@ -1,12 +1,15 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, computed, effect, inject, input, output, signal, viewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, computed, effect, inject, input, output, signal, viewChild, OnInit } from '@angular/core';
 
 import { ChatMessage, ChatPopup } from '../../core/models/chat.models';
 import { PortfolioProject } from '../../core/models/portfolio.models';
 import { Reel } from '../../core/models/reels.models';
 import { ChatService } from '../../core/services/chat.service';
 import { PocketBaseService } from '../../core/services/pocketbase.service';
+import { SiteConfigService } from '../../core/services/site-config.service';
 import { TurnstileService } from '../../core/services/turnstile.service';
 import { PopupRendererComponent } from './popup-renderer.component';
+
+const USER_ID_KEY = 'as_user_id';
 
 @Component({
   selector: 'app-chat-widget',
@@ -16,27 +19,22 @@ import { PopupRendererComponent } from './popup-renderer.component';
   styleUrl: './chat-widget.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ChatWidgetComponent implements AfterViewInit {
+export class ChatWidgetComponent implements AfterViewInit, OnInit {
   readonly isOpen = input(false);
   readonly opened = output<void>();
   readonly closed = output<void>();
 
+  protected readonly siteConfig = inject(SiteConfigService);
   private readonly chat = inject(ChatService);
   private readonly pocketBase = inject(PocketBaseService);
   private readonly turnstile = inject(TurnstileService);
   private readonly turnstileHost = viewChild<ElementRef<HTMLDivElement>>('turnstileHost');
   private readonly feedContainer = viewChild<ElementRef<HTMLDivElement>>('feedContainer');
   private readonly sessionId = makeSessionId();
+  private readonly userId = getOrCreateUserId();
 
   protected readonly draft = signal('');
-  protected readonly messages = signal<ChatMessage[]>([
-    {
-      id: makeMessageId(),
-      role: 'assistant',
-      text: 'Hola. Pregúntame sobre mi experiencia, proyectos, contenido o stack técnico.',
-      createdAt: Date.now()
-    }
-  ]);
+  protected readonly messages = signal<ChatMessage[]>([]);
   protected readonly isLoading = signal(false);
   protected readonly error = signal('');
   protected readonly suggestedReelIds = signal<string[]>([]);
@@ -44,6 +42,7 @@ export class ChatWidgetComponent implements AfterViewInit {
   protected readonly activePopup = signal<ChatPopup | null>(null);
   protected readonly projects = signal<PortfolioProject[]>([]);
   protected readonly reels = signal<Reel[]>([]);
+  protected readonly avatarUrl = signal<string | null>(null);
 
   protected readonly suggestedProjects = computed(() => {
     const ids = new Set(this.suggestedProjectIds());
@@ -72,6 +71,17 @@ export class ChatWidgetComponent implements AfterViewInit {
         }, 50);
       }
     });
+  }
+
+  ngOnInit(): void {
+    this.messages.set([
+      {
+        id: makeMessageId(),
+        role: 'assistant',
+        text: this.siteConfig.welcomeMessage(),
+        createdAt: Date.now()
+      }
+    ]);
   }
 
   protected close(): void {
@@ -115,20 +125,20 @@ export class ChatWidgetComponent implements AfterViewInit {
 
     try {
       const token = await this.turnstile.execute(host);
-      const response = await this.chat.sendMessage(message, this.sessionId, token);
-      this.appendMessage('assistant', response.answer, response.out_of_bounds);
+      const response = await this.chat.sendMessage(message, this.sessionId, this.userId, token);
+      this.appendMessage('assistant', response.answer, response.out_of_bounds, response.cta ?? undefined);
       this.suggestedReelIds.set(response.suggested_reels);
       this.suggestedProjectIds.set(response.suggested_projects);
       this.activePopup.set(response.popup);
     } catch {
-      this.error.set('El asistente no pudo completar la solicitud.');
+      this.error.set('No pude completar la solicitud. Intenta de nuevo.');
       this.appendMessage('system', 'SISTEMA: La solicitud falló antes de completarse.');
     } finally {
       this.isLoading.set(false);
     }
   }
 
-  private appendMessage(role: ChatMessage['role'], text: string, outOfBounds = false): void {
+  private appendMessage(role: ChatMessage['role'], text: string, outOfBounds = false, cta?: { label: string; href: string }): void {
     this.messages.update((messages) => [
       ...messages,
       {
@@ -136,7 +146,8 @@ export class ChatWidgetComponent implements AfterViewInit {
         role,
         text,
         createdAt: Date.now(),
-        outOfBounds
+        outOfBounds,
+        cta
       }
     ]);
   }
@@ -201,4 +212,17 @@ function makeSessionId(): string {
 
 function makeMessageId(): string {
   return `msg_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+}
+
+function getOrCreateUserId(): string {
+  if (typeof localStorage === 'undefined') {
+    return crypto.randomUUID ? crypto.randomUUID() : `user_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  }
+
+  let userId = localStorage.getItem(USER_ID_KEY);
+  if (!userId) {
+    userId = crypto.randomUUID ? crypto.randomUUID() : `user_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    localStorage.setItem(USER_ID_KEY, userId);
+  }
+  return userId;
 }
