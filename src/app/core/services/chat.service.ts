@@ -9,11 +9,12 @@ import { ChatRequest, ChatResponse } from '../models/chat.models';
 export class ChatService {
   private readonly http = inject(HttpClient);
 
-  sendMessage(message: string, sessionId: string, userId: string, turnstileToken: string): Promise<ChatResponse> {
+  sendMessage(message: string, sessionId: string, userId: string, turnstileToken: string, language?: string): Promise<ChatResponse> {
     const body: ChatRequest = {
       message,
       session_id: sessionId,
       user_id: userId,
+      language,
       turnstile_token: turnstileToken
     };
 

@@ -22,6 +22,7 @@ export interface SiteConfig {
   contact_cta: string;
   contact_email: string;
   persona_name: string;
+  supported_languages: string;
   avatar_url: string | null;
 }
 
@@ -45,6 +46,7 @@ export class SiteConfigService {
   readonly contactCta = signal('Hablemos');
   readonly contactEmail = signal('contact@anthonysmith.org');
   readonly personaName = signal('Anthony');
+  readonly supportedLanguages = signal<string[]>(['Español']);
   readonly avatarUrl = signal<string | null>(null);
 
   async loadConfig(): Promise<void> {
@@ -66,6 +68,14 @@ export class SiteConfigService {
       this.contactCta.set(config.contact_cta);
       this.contactEmail.set(config.contact_email);
       this.personaName.set(config.persona_name);
+      
+      if (config.supported_languages) {
+        const langs = config.supported_languages.split(',').map(s => s.trim()).filter(Boolean);
+        if (langs.length > 0) {
+          this.supportedLanguages.set(langs);
+        }
+      }
+
       this.avatarUrl.set(config.avatar_url ? `${baseUrl}${config.avatar_url}` : null);
 
       if (config.site_title) {

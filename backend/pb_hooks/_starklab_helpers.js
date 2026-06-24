@@ -54,6 +54,7 @@ function handleSiteConfig(e) {
       contact_cta: record.getString("contact_cta") || "Contact us",
       contact_email: record.getString("contact_email") || "",
       persona_name: record.getString("persona_name") || "Assistant",
+      supported_languages: record.getString("supported_languages") || "Español",
       avatar_url: avatarUrl
     });
   } catch (err) {
@@ -92,6 +93,7 @@ function handleChat(e) {
   try {
     const config = loadConfig(e.app);
     const message = sanitizeMessage(body.message, config.max_query_chars);
+    const language = safeString(body.language).slice(0, 50) || "Español";
 
     if (!message) {
       logData.error = "invalid_message";
@@ -126,7 +128,7 @@ function handleChat(e) {
     logData.retrieved_context = retrieval.logContext;
     logData.top_score = retrieval.topScore;
 
-    const llmResult = callConfiguredLlm(config, message, retrieval.contextText, memoryText);
+    const llmResult = callConfiguredLlm(config, message, retrieval.contextText, memoryText, language);
     logData.provider = llmResult.provider;
     logData.model = llmResult.model;
 
@@ -641,7 +643,7 @@ function scoreRecord(collection, record, queryEmbedding, embedding, lexicalScore
 // LLM call
 // ---------------------------------------------------------------------------
 
-function callConfiguredLlm(config, message, contextText, memoryText) {
+function callConfiguredLlm(config, message, contextText, memoryText, language) {
   const providers = [
     { provider: config.active_provider, model: config.active_model },
     { provider: config.fallback_provider, model: config.fallback_model }
@@ -655,12 +657,12 @@ function callConfiguredLlm(config, message, contextText, memoryText) {
       continue;
     }
     seen[key] = true;
-    const result = callLlmProvider(item.provider, item.model, config, message, contextText, memoryText, "json_schema");
+    const result = callLlmProvider(item.provider, item.model, config, message, contextText, memoryText, "json_schema", language);
     if (result.ok) {
       return result;
     }
     errors.push(result.error);
-    const retry = callLlmProvider(item.provider, item.model, config, message, contextText, memoryText, "json_object");
+    const retry = callLlmProvider(item.provider, item.model, config, message, contextText, memoryText, "json_object", language);
     if (retry.ok) {
       return retry;
     }
@@ -670,7 +672,7 @@ function callConfiguredLlm(config, message, contextText, memoryText) {
   return { ok: false, provider: "", model: "", error: "llm_providers_failed: " + errors.join(", "), payload: null };
 }
 
-function callLlmProvider(provider, model, config, message, contextText, memoryText, responseMode) {
+function callLlmProvider(provider, model, config, message, contextText, memoryText, responseMode, language) {
   const endpoint = providerEndpoint(provider);
   const apiKey = providerApiKey(provider);
   if (!endpoint || !apiKey || !model) {
@@ -691,7 +693,7 @@ function callLlmProvider(provider, model, config, message, contextText, memoryTe
         temperature: config.temperature,
         max_tokens: Math.floor(config.max_tokens),
         messages: [
-          { role: "system", content: buildSystemPrompt(config.system_prompt, contextText, memoryText, config.contact_email, config.persona_name) },
+          { role: "system", content: buildSystemPrompt(config.system_prompt, contextText, memoryText, config.contact_email, config.persona_name, language) },
           { role: "user", content: "<usuario>\n" + message + "\n</usuario>" }
         ],
         response_format: responseMode === "json_schema" ? strictJsonSchema() : { type: "json_object" }
@@ -864,10 +866,10 @@ function itemToContextFragment(item) {
 }
 
 // ---------------------------------------------------------------------------
-// System prompt — First person as Anthony
+// Prompting & JSON Schema
 // ---------------------------------------------------------------------------
 
-function buildSystemPrompt(systemPrompt, contextText, memoryText, contactEmail, personaName) {
+function buildSystemPrompt(systemPrompt, contextText, memoryText, contactEmail, personaName, language) {
   var parts = [
     "<sistema>",
     systemPrompt || defaultSystemPrompt(personaName),
@@ -881,6 +883,10 @@ function buildSystemPrompt(systemPrompt, contextText, memoryText, contactEmail, 
   }
 
   parts.push("</sistema>");
+  parts.push("<reglas_estrictas>");
+  parts.push("DEBES RESPONDER EXCLUSIVAMENTE EN EL IDIOMA: " + language.toUpperCase());
+  parts.push("</reglas_estrictas>");
+  
   parts.push("<contexto>");
   parts.push(contextText);
   parts.push("</contexto>");

@@ -34,6 +34,7 @@ export class ChatWidgetComponent implements AfterViewInit, OnInit {
   private readonly userId = getOrCreateUserId();
 
   protected readonly draft = signal('');
+  protected readonly selectedLanguage = signal('Español');
   protected readonly messages = signal<ChatMessage[]>([]);
   protected readonly isLoading = signal(false);
   protected readonly error = signal('');
@@ -61,6 +62,12 @@ export class ChatWidgetComponent implements AfterViewInit, OnInit {
       const container = this.feedContainer()?.nativeElement;
       this.messages();
       this.isLoading();
+
+      // Initialize default language
+      const langs = this.siteConfig.supportedLanguages();
+      if (langs.length > 0 && this.selectedLanguage() === 'Español' && !langs.includes('Español')) {
+        this.selectedLanguage.set(langs[0]);
+      }
 
       if (container) {
         setTimeout(() => {
@@ -99,6 +106,13 @@ export class ChatWidgetComponent implements AfterViewInit, OnInit {
     }
   }
 
+  protected updateLanguage(event: Event): void {
+    const target = event.target;
+    if (target instanceof HTMLSelectElement) {
+      this.selectedLanguage.set(target.value);
+    }
+  }
+
   protected handleKeydown(event: KeyboardEvent): void {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
@@ -125,7 +139,7 @@ export class ChatWidgetComponent implements AfterViewInit, OnInit {
 
     try {
       const token = await this.turnstile.execute(host);
-      const response = await this.chat.sendMessage(message, this.sessionId, this.userId, token);
+      const response = await this.chat.sendMessage(message, this.sessionId, this.userId, token, this.selectedLanguage());
       this.appendMessage('assistant', response.answer, response.out_of_bounds, response.cta ?? undefined);
       this.suggestedReelIds.set(response.suggested_reels);
       this.suggestedProjectIds.set(response.suggested_projects);
