@@ -36,3 +36,16 @@ export interface ChatMessage {
   outOfBounds?: boolean;
   cta?: { label: string; href: string };
 }
+
+export interface ChatHistoryItem {
+  id: string;
+  user_message: string;
+  assistant_response: string;
+  out_of_bounds: boolean;
+  created_at: number;
+}
+
+export interface ChatHistoryResponse {
+  items: ChatHistoryItem[];
+  next_offset: number | null;
+}

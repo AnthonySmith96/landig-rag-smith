@@ -46,6 +46,19 @@
 
         <div class="chat-column">
           <div #feedContainer class="message-feed neo-shadow" aria-live="polite">
+            
+            @if (hasMoreHistory()) {
+              <div class="load-more-container">
+                <button type="button" class="load-more-btn neo-action" (click)="loadHistory()" [disabled]="isHistoryLoading()">
+                  @if (isHistoryLoading()) {
+                    Cargando...
+                  } @else {
+                    Cargar mensajes anteriores
+                  }
+                </button>
+              </div>
+            }
+
             <div class="system-line">SISTEMA: Conectado con {{ siteConfig.personaName() }}.</div>
             @for (message of messages(); track message.id) {
               <article class="message" [class.message--user]="message.role === 'user'" [class.message--system]="message.role === 'system'">

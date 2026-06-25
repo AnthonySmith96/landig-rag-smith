@@ -14,6 +14,10 @@ routerAdd("POST", "/api/custom/chat", (e) => {
   return require(`${__hooks}/_starklab_helpers.js`).handleChat(e);
 }, $apis.bodyLimit(4096));
 
+routerAdd("GET", "/api/custom/chat/history", (e) => {
+  return require(`${__hooks}/_starklab_helpers.js`).handleChatHistory(e);
+});
+
 routerAdd("POST", "/api/custom/reindex", (e) => {
   return require(`${__hooks}/_starklab_helpers.js`).handleReindex(e);
 }, $apis.requireSuperuserAuth(), $apis.bodyLimit(1024));

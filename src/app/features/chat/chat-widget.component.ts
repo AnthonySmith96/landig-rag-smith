@@ -39,6 +39,9 @@ export class ChatWidgetComponent implements AfterViewInit, OnInit {
   protected readonly selectedLanguage = signal('Español');
   protected readonly messages = signal<ChatMessage[]>([]);
   protected readonly isLoading = signal(false);
+  protected readonly isHistoryLoading = signal(false);
+  protected readonly hasMoreHistory = signal(false);
+  protected readonly historyOffset = signal(0);
   protected readonly error = signal('');
   protected readonly suggestedReelIds = signal<string[]>([]);
   protected readonly suggestedProjectIds = signal<string[]>([]);
@@ -83,14 +86,68 @@ export class ChatWidgetComponent implements AfterViewInit, OnInit {
   }
 
   ngOnInit(): void {
-    this.messages.set([
-      {
-        id: makeMessageId(),
-        role: 'assistant',
-        text: this.siteConfig.welcomeMessage(),
-        createdAt: Date.now()
+    void this.loadHistory();
+  }
+
+  protected async loadHistory(): Promise<void> {
+    if (this.isHistoryLoading()) return;
+    this.isHistoryLoading.set(true);
+    try {
+      const response = await this.chat.getHistory(this.userId, this.historyOffset());
+      
+      const newMessages: ChatMessage[] = [];
+      // History is ordered by -created, so the first item is the newest in the batch.
+      // We want to insert them at the top in chronological order.
+      // So we reverse the batch before adding.
+      const reversedBatch = [...response.items].reverse();
+
+      for (const item of reversedBatch) {
+        newMessages.push({
+          id: `${item.id}_user`,
+          role: 'user',
+          text: item.user_message,
+          createdAt: item.created_at
+        });
+        newMessages.push({
+          id: `${item.id}_assistant`,
+          role: 'assistant',
+          text: item.assistant_response,
+          createdAt: item.created_at + 1,
+          outOfBounds: item.out_of_bounds
+        });
       }
-    ]);
+
+      this.messages.update(prev => {
+        // If this is the first load and we got nothing, show welcome message
+        if (prev.length === 0 && newMessages.length === 0) {
+          return [{
+            id: makeMessageId(),
+            role: 'assistant',
+            text: this.siteConfig.welcomeMessage(),
+            createdAt: Date.now()
+          }];
+        }
+        return [...newMessages, ...prev];
+      });
+
+      this.historyOffset.set(response.next_offset || 0);
+      this.hasMoreHistory.set(response.next_offset !== null);
+    } catch {
+      // Fall silent on history error, just show welcome if empty
+      this.messages.update(prev => {
+        if (prev.length === 0) {
+          return [{
+            id: makeMessageId(),
+            role: 'assistant',
+            text: this.siteConfig.welcomeMessage(),
+            createdAt: Date.now()
+          }];
+        }
+        return prev;
+      });
+    } finally {
+      this.isHistoryLoading.set(false);
+    }
   }
 
   protected close(): void {

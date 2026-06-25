@@ -97,6 +97,7 @@ function handleChat(e) {
     const message = sanitizeMessage(body.message, config.max_query_chars);
     const language = safeString(body.language).slice(0, 50) || "Español";
 
+    logData.user_id = userId;
     logData.user_message = message;
     logData.user_message_truncated = message.slice(0, 100);
 
@@ -1026,6 +1027,7 @@ function writeChatLog(app, data) {
   try {
     const record = new Record(app.findCollectionByNameOrId("chat_logs"));
     record.set("session_id", data.session_id || "");
+    record.set("user_id", data.user_id || "");
     record.set("ip_hash", data.ip_hash || "");
     record.set("user_message_truncated", data.user_message_truncated || "");
     record.set("user_message", data.user_message || "");
@@ -1040,6 +1042,48 @@ function writeChatLog(app, data) {
     app.save(record);
   } catch (e) {
     // Logging must not break the endpoint.
+  }
+}
+
+function handleChatHistory(e) {
+  try {
+    const userId = safeString(e.request.url.query().get("user_id")).slice(0, 50);
+    const offset = Math.max(0, parseInt(e.request.url.query().get("offset")) || 0);
+    const limit = Math.max(1, Math.min(50, parseInt(e.request.url.query().get("limit")) || 20));
+
+    if (!userId) {
+      return e.json(400, { error: "user_id_required" });
+    }
+
+    const records = e.app.findRecordsByFilter(
+      "chat_logs",
+      "user_id = {:userId}",
+      "-created",
+      limit,
+      offset,
+      { userId: userId }
+    );
+
+    const history = [];
+    for (let i = 0; i < records.length; i++) {
+      const rec = records[i];
+      if (rec.getString("user_message") && rec.getString("assistant_response")) {
+        history.push({
+          id: rec.id,
+          user_message: rec.getString("user_message"),
+          assistant_response: rec.getString("assistant_response"),
+          out_of_bounds: rec.getBool("out_of_bounds"),
+          created_at: rec.created.time().unixMilli()
+        });
+      }
+    }
+
+    return e.json(200, {
+      items: history,
+      next_offset: records.length === limit ? offset + limit : null
+    });
+  } catch (err) {
+    return e.json(500, { error: "internal_error" });
   }
 }
 
@@ -1274,6 +1318,7 @@ module.exports = {
   handleRecordCreate,
   handleRecordUpdate,
   handleSiteConfig,
-  handleChat,
+  handleChat: handleChat,
+  handleChatHistory: handleChatHistory,
   handleReindex
 };
