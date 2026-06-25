@@ -14,7 +14,9 @@
     <div class="project-grid">
       @for (project of visibleProjects(); track project.id) {
         <article class="project-card neo-shadow">
-          <div class="project-index">0{{ $index + 1 }}</div>
+          <div class="project-index">
+            {{ (currentPage() * pageSize) + $index + 1 < 10 ? '0' : '' }}{{ (currentPage() * pageSize) + $index + 1 }}
+          </div>
           @if (project.image) {
             <img [src]="project.image" [alt]="project.project_name" loading="lazy">
           } @else {
@@ -44,5 +46,29 @@
         </article>
       }
     </div>
+
+    @if (totalPages() > 1) {
+      <div class="portfolio-actions">
+        <button 
+          class="btn-neo" 
+          [disabled]="currentPage() === 0" 
+          (click)="prevPage()"
+          aria-label="Página anterior">
+          <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+          Anterior
+        </button>
+        <div class="page-indicator">
+          Pág. {{ currentPage() + 1 }} de {{ totalPages() }}
+        </div>
+        <button 
+          class="btn-neo" 
+          [disabled]="currentPage() === totalPages() - 1" 
+          (click)="nextPage()"
+          aria-label="Página siguiente">
+          Siguiente
+          <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+        </button>
+      </div>
+    }
   }
 </section>

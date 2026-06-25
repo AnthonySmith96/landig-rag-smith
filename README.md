@@ -116,7 +116,7 @@ graph TD
     C -->|Vector Similarity| D[(SQLite - Vector Embeddings)]
     C -->|Lexical Match| E[(SQLite - Text)]
     C -->|API Embeddings| F[Embedding Provider]
-    B -->|System Prompt Inject| G[LLM API (OpenRouter/Groq)]
+    B -->|System Prompt Inject| G["LLM API (OpenRouter/Groq)"]
     G -->|JSON Contract| B
     B -->|Sanitized Result| A
 ```

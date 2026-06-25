@@ -16,7 +16,18 @@ export class PortfolioStripComponent {
   protected readonly projects = signal<PortfolioProject[]>([]);
   protected readonly isLoading = signal(true);
   protected readonly error = signal('');
-  protected readonly visibleProjects = computed(() => this.projects().slice(0, 3));
+
+  protected readonly currentPage = signal(0);
+  protected readonly pageSize = 3;
+
+  protected readonly visibleProjects = computed(() => {
+    const start = this.currentPage() * this.pageSize;
+    return this.projects().slice(start, start + this.pageSize);
+  });
+
+  protected readonly totalPages = computed(() => {
+    return Math.max(1, Math.ceil(this.projects().length / this.pageSize));
+  });
 
   constructor() {
     void this.load();
@@ -29,6 +40,18 @@ export class PortfolioStripComponent {
       this.error.set('El portafolio no está disponible.');
     } finally {
       this.isLoading.set(false);
+    }
+  }
+
+  protected nextPage(): void {
+    if (this.currentPage() < this.totalPages() - 1) {
+      this.currentPage.update(p => p + 1);
+    }
+  }
+
+  protected prevPage(): void {
+    if (this.currentPage() > 0) {
+      this.currentPage.update(p => p - 1);
     }
   }
 }
