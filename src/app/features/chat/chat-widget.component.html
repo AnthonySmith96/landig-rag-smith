@@ -55,7 +55,9 @@
                   </div>
                 }
                 <div class="message-content">
-                  <p [class.out-of-bounds]="message.outOfBounds">&gt; {{ message.text }}</p>
+                  <p [class.out-of-bounds]="message.outOfBounds">
+                    <span class="md-block" [innerHTML]="message.text | markdown"></span>
+                  </p>
                   @if (message.cta; as cta) {
                     <a class="cta-button neo-action" [href]="cta.href" target="_blank" rel="noreferrer">{{ cta.label }}</a>
                   }

@@ -9,12 +9,14 @@ import { SiteConfigService } from '../../core/services/site-config.service';
 import { TurnstileService } from '../../core/services/turnstile.service';
 import { PopupRendererComponent } from './popup-renderer.component';
 
+import { MarkdownPipe } from '../../shared/pipes/markdown.pipe';
+
 const USER_ID_KEY = 'as_user_id';
 
 @Component({
   selector: 'app-chat-widget',
   standalone: true,
-  imports: [PopupRendererComponent],
+  imports: [PopupRendererComponent, MarkdownPipe],
   templateUrl: './chat-widget.component.html',
   styleUrl: './chat-widget.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
