@@ -71,7 +71,9 @@ function handleChat(e) {
   const logData = {
     session_id: safeString(body.session_id).slice(0, 120),
     ip_hash: ipHash,
-    user_message_truncated: safeString(body.message).slice(0, 500),
+    user_message: "",
+    user_message_truncated: "",
+    assistant_response: "",
     provider: "",
     model: "",
     retrieved_context: [],
@@ -94,6 +96,9 @@ function handleChat(e) {
     const config = loadConfig(e.app);
     const message = sanitizeMessage(body.message, config.max_query_chars);
     const language = safeString(body.language).slice(0, 50) || "Español";
+
+    logData.user_message = message;
+    logData.user_message_truncated = message.slice(0, 100);
 
     if (!message) {
       logData.error = "invalid_message";
@@ -135,20 +140,25 @@ function handleChat(e) {
     if (!llmResult.ok) {
       logData.error = llmResult.error;
       logData.latency_ms = Date.now() - startedAt;
+      const errorMsg = "ERROR DEL LLM: " + llmResult.error;
+      logData.assistant_response = errorMsg;
       writeChatLog(e.app, logData);
-      return e.json(200, fallbackResponse("ERROR DEL LLM: " + llmResult.error, config.contact_email));
+      return e.json(200, fallbackResponse(errorMsg, config.contact_email));
     }
 
     const validated = validateLlmResponse(e.app, llmResult.payload, config.contact_email);
     if (!validated) {
       logData.error = "invalid_llm_json";
       logData.latency_ms = Date.now() - startedAt;
+      const jsonErrorMsg = "ERROR DE JSON: El LLM respondió con un formato incorrecto. Payload: " + JSON.stringify(llmResult.payload);
+      logData.assistant_response = jsonErrorMsg;
       writeChatLog(e.app, logData);
-      return e.json(200, fallbackResponse("ERROR DE JSON: El LLM respondió con un formato incorrecto. Payload: " + JSON.stringify(llmResult.payload), config.contact_email));
+      return e.json(200, fallbackResponse(jsonErrorMsg, config.contact_email));
     }
 
     logData.out_of_bounds = validated.out_of_bounds;
     logData.latency_ms = Date.now() - startedAt;
+    logData.assistant_response = validated.answer;
     writeChatLog(e.app, logData);
 
     // Track turn for memory summarization.
@@ -1018,6 +1028,8 @@ function writeChatLog(app, data) {
     record.set("session_id", data.session_id || "");
     record.set("ip_hash", data.ip_hash || "");
     record.set("user_message_truncated", data.user_message_truncated || "");
+    record.set("user_message", data.user_message || "");
+    record.set("assistant_response", data.assistant_response || "");
     record.set("provider", data.provider || "");
     record.set("model", data.model || "");
     record.set("retrieved_context", data.retrieved_context || []);
