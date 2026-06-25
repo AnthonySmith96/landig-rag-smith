@@ -9,16 +9,18 @@
     <div class="chat-shell">
       <header class="chat-header">
         <h2>{{ siteConfig.chatHeader() }}</h2>
-        @if (siteConfig.supportedLanguages().length > 1) {
-          <select class="language-select neo-action" [value]="selectedLanguage()" (change)="updateLanguage($event)" aria-label="Seleccionar idioma">
-            @for (lang of siteConfig.supportedLanguages(); track lang) {
-              <option [value]="lang">{{ lang }}</option>
-            }
-          </select>
-        }
-        <button type="button" class="close-button" (click)="close()" aria-label="Cerrar chat">
-          <span class="material-symbols-outlined" aria-hidden="true">close</span>
-        </button>
+        <div class="chat-header-actions">
+          @if (siteConfig.supportedLanguages().length > 1) {
+            <select class="language-select neo-action" [value]="selectedLanguage()" (change)="updateLanguage($event)" aria-label="Seleccionar idioma">
+              @for (lang of siteConfig.supportedLanguages(); track lang) {
+                <option [value]="lang">{{ lang }}</option>
+              }
+            </select>
+          }
+          <button type="button" class="close-button" (click)="close()" aria-label="Cerrar chat">
+            <span class="material-symbols-outlined" aria-hidden="true">close</span>
+          </button>
+        </div>
       </header>
 
       <div class="chat-layout">
