@@ -1,7 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
 
 import { PortfolioProject } from '../../core/models/portfolio.models';
-import { PocketBaseService } from '../../core/services/pocketbase.service';
 
 @Component({
   selector: 'app-portfolio-strip',
@@ -11,11 +10,7 @@ import { PocketBaseService } from '../../core/services/pocketbase.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PortfolioStripComponent {
-  private readonly pocketBase = inject(PocketBaseService);
-
-  protected readonly projects = signal<PortfolioProject[]>([]);
-  protected readonly isLoading = signal(true);
-  protected readonly error = signal('');
+  projects = input<PortfolioProject[]>([]);
 
   protected readonly currentPage = signal(0);
   protected readonly pageSize = 3;
@@ -28,20 +23,6 @@ export class PortfolioStripComponent {
   protected readonly totalPages = computed(() => {
     return Math.max(1, Math.ceil(this.projects().length / this.pageSize));
   });
-
-  constructor() {
-    void this.load();
-  }
-
-  private async load(): Promise<void> {
-    try {
-      this.projects.set(await this.pocketBase.getActiveProjects());
-    } catch {
-      this.error.set('El portafolio no está disponible.');
-    } finally {
-      this.isLoading.set(false);
-    }
-  }
 
   protected nextPage(): void {
     if (this.currentPage() < this.totalPages() - 1) {

@@ -1,9 +1,15 @@
 <header class="topbar">
   <a class="brand" href="/" [attr.aria-label]="'Inicio de ' + siteConfig.brandName()">{{ siteConfig.brandName() }}</a>
   <nav class="nav-links" aria-label="Navegación principal">
-    <a href="#resources">Recursos</a>
-    <a href="#portfolio">Portafolio</a>
-    <a href="#reels">Guias</a>
+    @if (protocols().length > 0) {
+      <a href="#resources">Recursos</a>
+    }
+    @if (projects().length > 0) {
+      <a href="#portfolio">Portafolio</a>
+    }
+    @if (reels().length > 0) {
+      <a href="#reels">Guias</a>
+    }
   </nav>
   <a class="hire-button neo-action" href="#connect">{{ siteConfig.ctaText() }}</a>
 </header>
@@ -13,51 +19,59 @@
   <div class="block block--yellow" aria-hidden="true"></div>
   <div class="diamond" aria-hidden="true"></div>
 
-  <section class="hero" aria-labelledby="hero-title">
-    <h1 id="hero-title">
-      {{ siteConfig.heroLine1() }}
-      <span class="stroke">{{ siteConfig.heroLine2() }}</span>
-      <span class="label">{{ siteConfig.heroLine3() }}</span>
-    </h1>
-    <p>
-      {{ siteConfig.heroParagraph() }}
-    </p>
-  </section>
+  @if (siteConfig.heroLine1() || siteConfig.heroLine2() || siteConfig.heroLine3()) {
+    <section class="hero" aria-labelledby="hero-title">
+      <h1 id="hero-title">
+        {{ siteConfig.heroLine1() }}
+        <span class="stroke">{{ siteConfig.heroLine2() }}</span>
+        <span class="label">{{ siteConfig.heroLine3() }}</span>
+      </h1>
+      <p>
+        {{ siteConfig.heroParagraph() }}
+      </p>
+    </section>
+  }
 
-  <section class="protocols" id="resources" aria-labelledby="protocols-title">
-    <h2 id="protocols-title">Protocolos de transmisión</h2>
-    <div class="protocol-grid">
-      @for (protocol of protocols(); track protocol.id) {
-        <a class="protocol-card card-{{ protocol.cardStyle }} neo-shadow neo-action" [href]="protocol.url" target="_blank" rel="noreferrer">
-          <div class="protocol-top">
-            @if (protocol.cardStyle === 'x') {
-              <span class="x-mark" aria-hidden="true">X</span>
-            } @else {
-              <span class="material-symbols-outlined icon" aria-hidden="true">{{ protocol.icon }}</span>
-            }
-            
-            @if (protocol.badge) {
-              <span class="tag">{{ protocol.badge }}</span>
-            } @else {
-              <span class="arrow material-symbols-outlined" aria-hidden="true">arrow_forward</span>
-            }
-          </div>
-          <span class="protocol-copy">
-            <strong>{{ protocol.title }}</strong>
-            <small>{{ protocol.handle }}</small>
-          </span>
-        </a>
-      }
+  @if (protocols().length > 0) {
+    <section class="protocols" id="resources" aria-labelledby="protocols-title">
+      <h2 id="protocols-title">Protocolos de transmisión</h2>
+      <div class="protocol-grid">
+        @for (protocol of protocols(); track protocol.id) {
+          <a class="protocol-card card-{{ protocol.cardStyle }} neo-shadow neo-action" [href]="protocol.url" target="_blank" rel="noreferrer">
+            <div class="protocol-top">
+              @if (protocol.cardStyle === 'x') {
+                <span class="x-mark" aria-hidden="true">X</span>
+              } @else {
+                <span class="material-symbols-outlined icon" aria-hidden="true">{{ protocol.icon }}</span>
+              }
+              
+              @if (protocol.badge) {
+                <span class="tag">{{ protocol.badge }}</span>
+              } @else {
+                <span class="arrow material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+              }
+            </div>
+            <span class="protocol-copy">
+              <strong>{{ protocol.title }}</strong>
+              <small>{{ protocol.handle }}</small>
+            </span>
+          </a>
+        }
+      </div>
+    </section>
+  }
+
+  @if (projects().length > 0) {
+    <div id="portfolio">
+      <app-portfolio-strip [projects]="projects()"></app-portfolio-strip>
     </div>
-  </section>
+  }
 
-  <div id="portfolio">
-    <app-portfolio-strip></app-portfolio-strip>
-  </div>
-
-  <div id="reels">
-    <app-reels-strip></app-reels-strip>
-  </div>
+  @if (reels().length > 0) {
+    <div id="reels">
+      <app-reels-strip [reels]="reels()"></app-reels-strip>
+    </div>
+  }
 
   <app-contact-strip></app-contact-strip>
 </main>

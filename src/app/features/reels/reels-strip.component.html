@@ -4,36 +4,28 @@
     <h2 id="reels-title">Reels tecnicos</h2>
   </div>
 
-  @if (isLoading()) {
-    <div class="status-box">Cargando reels...</div>
-  } @else if (error()) {
-    <div class="status-box status-box--alert">{{ error() }}</div>
-  } @else if (visibleReels().length === 0) {
-    <div class="status-box">Los reels activos aparecerán aquí cuando PocketBase tenga registros.</div>
-  } @else {
-    <div class="reel-rail">
-      @for (reel of visibleReels(); track reel.id) {
-        <article class="reel-card neo-shadow">
-          <div class="reel-topline">
-            <span class="material-symbols-outlined" aria-hidden="true">play_arrow</span>
-            <small>Reel 0{{ $index + 1 }}</small>
+  <div class="reel-rail">
+    @for (reel of visibleReels(); track reel.id) {
+      <article class="reel-card neo-shadow">
+        <div class="reel-topline">
+          <span class="material-symbols-outlined" aria-hidden="true">play_arrow</span>
+          <small>Reel 0{{ $index + 1 }}</small>
+        </div>
+        <h3>{{ reel.title }}</h3>
+        @if (reel.description) {
+          <p>{{ reel.description }}</p>
+        }
+        @if (reel.platforms?.length) {
+          <div class="platform-list" aria-label="Plataformas">
+            @for (platform of reel.platforms.slice(0, 3); track platform) {
+              <span>{{ platform }}</span>
+            }
           </div>
-          <h3>{{ reel.title }}</h3>
-          @if (reel.description) {
-            <p>{{ reel.description }}</p>
-          }
-          @if (reel.platforms?.length) {
-            <div class="platform-list" aria-label="Plataformas">
-              @for (platform of reel.platforms.slice(0, 3); track platform) {
-                <span>{{ platform }}</span>
-              }
-            </div>
-          }
-          @if (primaryUrl(reel); as url) {
-            <a class="reel-link neo-action" [href]="url" target="_blank" rel="noreferrer">Ver</a>
-          }
-        </article>
-      }
-    </div>
-  }
+        }
+        @if (primaryUrl(reel); as url) {
+          <a class="reel-link neo-action" [href]="url" target="_blank" rel="noreferrer">Ver</a>
+        }
+      </article>
+    }
+  </div>
 </section>
