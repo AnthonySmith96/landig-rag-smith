@@ -7,3 +7,4 @@ routerAdd("GET", "/api/custom/debug-logs", (c) => {
   }));
   return c.json(200, logs);
 });
+

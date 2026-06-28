@@ -203,9 +203,10 @@ export class ChatWidgetComponent implements AfterViewInit, OnInit {
       this.suggestedReelIds.set(response.suggested_reels);
       this.suggestedProjectIds.set(response.suggested_projects);
       this.activePopup.set(response.popup);
-    } catch {
+    } catch (err) {
+      console.error('Error al enviar mensaje en el chat:', err);
       this.error.set('No pude completar la solicitud. Intenta de nuevo.');
-      this.appendMessage('system', 'SISTEMA: La solicitud falló antes de completarse.');
+      this.appendMessage('system', 'SISTEMA: Hubo un problema de conexión. Por favor, intenta de nuevo.');
     } finally {
       this.isLoading.set(false);
     }

@@ -134,7 +134,7 @@ function handleChat(e) {
     logData.retrieved_context = retrieval.logContext;
     logData.top_score = retrieval.topScore;
 
-    const llmResult = callConfiguredLlm(config, message, retrieval.contextText, memoryText, language);
+    const llmResult = callConfiguredLlm(e.app, config, message, retrieval.contextText, memoryText, language);
     logData.provider = llmResult.provider;
     logData.model = llmResult.model;
 
@@ -144,7 +144,8 @@ function handleChat(e) {
       const errorMsg = "ERROR DEL LLM: " + llmResult.error;
       logData.assistant_response = errorMsg;
       writeChatLog(e.app, logData);
-      return e.json(200, fallbackResponse(errorMsg, config.contact_email));
+      console.error(errorMsg);
+      return e.json(200, fallbackResponse(null, config.contact_email));
     }
 
     const validated = validateLlmResponse(e.app, llmResult.payload, config.contact_email);
@@ -154,7 +155,8 @@ function handleChat(e) {
       const jsonErrorMsg = "ERROR DE JSON: El LLM respondió con un formato incorrecto. Payload: " + JSON.stringify(llmResult.payload);
       logData.assistant_response = jsonErrorMsg;
       writeChatLog(e.app, logData);
-      return e.json(200, fallbackResponse(jsonErrorMsg, config.contact_email));
+      console.error(jsonErrorMsg);
+      return e.json(200, fallbackResponse(null, config.contact_email));
     }
 
     logData.out_of_bounds = validated.out_of_bounds;
@@ -172,7 +174,8 @@ function handleChat(e) {
     logData.error = shortError(err);
     logData.latency_ms = Date.now() - startedAt;
     writeChatLog(e.app, logData);
-    return e.json(200, fallbackResponse("EXCEPTION CAUGHT: " + shortError(err), null));
+    console.error("EXCEPTION CAUGHT: " + shortError(err));
+    return e.json(200, fallbackResponse(null, null));
   }
 }
 
@@ -654,7 +657,33 @@ function scoreRecord(collection, record, queryEmbedding, embedding, lexicalScore
 // LLM call
 // ---------------------------------------------------------------------------
 
-function callConfiguredLlm(config, message, contextText, memoryText, language) {
+function isValidLlmPayload(payload) {
+  if (!payload || typeof payload !== "object") {
+    return false;
+  }
+  const answer = (payload.answer || "").toString().trim();
+  return answer.length > 0;
+}
+
+function loadSocialProtocolsText(app) {
+  try {
+    const records = app.findRecordsByFilter("social_protocols", "is_active = true", "priority");
+    const lines = [];
+    for (let i = 0; i < records.length; i++) {
+      const rec = records[i];
+      const title = rec.getString("title");
+      const url = rec.getString("url");
+      if (title && url) {
+        lines.push("- " + title + ": " + url);
+      }
+    }
+    return lines.join("\n");
+  } catch (err) {
+    return "";
+  }
+}
+
+function callConfiguredLlm(app, config, message, contextText, memoryText, language) {
   const providers = [
     { provider: config.active_provider, model: config.active_model },
     { provider: config.fallback_provider, model: config.fallback_model }
@@ -668,22 +697,22 @@ function callConfiguredLlm(config, message, contextText, memoryText, language) {
       continue;
     }
     seen[key] = true;
-    const result = callLlmProvider(item.provider, item.model, config, message, contextText, memoryText, "json_schema", language);
-    if (result.ok) {
+    const result = callLlmProvider(app, item.provider, item.model, config, message, contextText, memoryText, "json_schema", language);
+    if (result.ok && isValidLlmPayload(result.payload)) {
       return result;
     }
-    errors.push(result.error);
-    const retry = callLlmProvider(item.provider, item.model, config, message, contextText, memoryText, "json_object", language);
-    if (retry.ok) {
+    errors.push(result.ok ? "invalid_json_payload" : result.error);
+    const retry = callLlmProvider(app, item.provider, item.model, config, message, contextText, memoryText, "json_object", language);
+    if (retry.ok && isValidLlmPayload(retry.payload)) {
       return retry;
     }
-    errors.push(retry.error);
+    errors.push(retry.ok ? "invalid_json_payload" : retry.error);
   }
 
   return { ok: false, provider: "", model: "", error: "llm_providers_failed: " + errors.join(", "), payload: null };
 }
 
-function callLlmProvider(provider, model, config, message, contextText, memoryText, responseMode, language) {
+function callLlmProvider(app, provider, model, config, message, contextText, memoryText, responseMode, language) {
   const endpoint = providerEndpoint(provider);
   const apiKey = providerApiKey(provider);
   if (!endpoint || !apiKey || !model) {
@@ -695,6 +724,7 @@ function callLlmProvider(provider, model, config, message, contextText, memoryTe
   }
 
   try {
+    const socialText = loadSocialProtocolsText(app);
     const response = $http.send({
       url: endpoint,
       method: "POST",
@@ -704,7 +734,7 @@ function callLlmProvider(provider, model, config, message, contextText, memoryTe
         temperature: config.temperature,
         max_tokens: Math.floor(config.max_tokens),
         messages: [
-          { role: "system", content: buildSystemPrompt(config.system_prompt, contextText, memoryText, config.contact_email, config.persona_name, language) },
+          { role: "system", content: buildSystemPrompt(config.system_prompt, contextText, memoryText, config.contact_email, config.persona_name, language, socialText) },
           { role: "user", content: "<usuario>\n" + message + "\n</usuario>" }
         ],
         response_format: responseMode === "json_schema" ? strictJsonSchema() : { type: "json_object" }
@@ -880,7 +910,7 @@ function itemToContextFragment(item) {
 // Prompting & JSON Schema
 // ---------------------------------------------------------------------------
 
-function buildSystemPrompt(systemPrompt, contextText, memoryText, contactEmail, personaName, language) {
+function buildSystemPrompt(systemPrompt, contextText, memoryText, contactEmail, personaName, language, socialText) {
   var parts = [
     "<sistema>",
     systemPrompt || defaultSystemPrompt(personaName),
@@ -891,6 +921,12 @@ function buildSystemPrompt(systemPrompt, contextText, memoryText, contactEmail, 
 
   if (contactEmail) {
     parts.push("Cuando la pregunta este fuera de tu alcance, sugiere al usuario que te escriba a: " + contactEmail + ". Incluye esto en tu respuesta de forma natural, como si tu mismo le dieras tu correo.");
+  }
+
+  if (socialText) {
+    parts.push("Cuando el usuario te pida enlaces o perfiles de redes sociales o contacto (GitHub, LinkedIn, X, YouTube, etc.), utiliza EXCLUSIVAMENTE los siguientes enlaces oficiales:");
+    parts.push(socialText);
+    parts.push("Regla: Si el usuario te pide un enlace que no está en la lista anterior, di amablemente que no está disponible o redirígelo a tu correo. NUNCA inventes o asumas ninguna URL externa.");
   }
 
   parts.push("</sistema>");
@@ -1047,9 +1083,11 @@ function writeChatLog(app, data) {
 
 function handleChatHistory(e) {
   try {
-    const userId = safeString(e.request.url.query().get("user_id")).slice(0, 50);
-    const offset = Math.max(0, parseInt(e.request.url.query().get("offset")) || 0);
-    const limit = Math.max(1, Math.min(50, parseInt(e.request.url.query().get("limit")) || 20));
+    const info = e.requestInfo();
+    const query = info.query || {};
+    const userId = safeString(query.user_id).slice(0, 50);
+    const offset = Math.max(0, parseInt(query.offset) || 0);
+    const limit = Math.max(1, Math.min(50, parseInt(query.limit) || 20));
 
     if (!userId) {
       return e.json(400, { error: "user_id_required" });
@@ -1073,7 +1111,7 @@ function handleChatHistory(e) {
           user_message: rec.getString("user_message"),
           assistant_response: rec.getString("assistant_response"),
           out_of_bounds: rec.getBool("out_of_bounds"),
-          created_at: rec.created.time().unixMilli()
+          created_at: Date.parse(rec.getString("created"))
         });
       }
     }
@@ -1119,6 +1157,14 @@ function rateLimitResponse() {
 // ---------------------------------------------------------------------------
 
 function jsonFieldValue(record, field) {
+  const rawStr = record.getString(field);
+  if (rawStr && rawStr.length > 0) {
+    try {
+      return JSON.parse(rawStr);
+    } catch (e) {
+      // Fallback
+    }
+  }
   const value = record.get(field);
   if (Array.isArray(value)) {
     return value;
