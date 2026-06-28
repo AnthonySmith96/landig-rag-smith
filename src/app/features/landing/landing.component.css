@@ -70,7 +70,7 @@
   position: relative;
   overflow: hidden;
   min-height: calc(100vh - 5rem);
-  padding: clamp(4.75rem, 8vw, 7rem) clamp(1rem, 5vw, 4rem) 5rem;
+  padding: clamp(2.25rem, 4.5vw, 3.5rem) clamp(1rem, 5vw, 4rem) 5rem;
 }
 
 .hero {
@@ -489,7 +489,7 @@ h1 span {
   }
 
   .page-shell {
-    padding-top: 3.75rem;
+    padding-top: 2rem;
   }
 
   .stroke {
