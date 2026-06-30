@@ -22,4 +22,11 @@ routerAdd("POST", "/api/custom/reindex", (e) => {
   return require(`${__hooks}/_starklab_helpers.js`).handleReindex(e);
 }, $apis.requireSuperuserAuth(), $apis.bodyLimit(1024));
 
-routerAdd("GET", "/{path...}", $apis.static("pb_public", true));
+routerAdd("GET", "/{path...}", (e) => {
+  const reqPath = e.request.url.path || "";
+  if (reqPath.startsWith("/api/") || reqPath.startsWith("/_/")) {
+    return e.notFoundError("Route not found");
+  }
+  // Serve static files from pb_public with SPA fallback (indexFallback=true)
+  return $apis.static("pb_public", true)(e);
+});
