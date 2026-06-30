@@ -84,8 +84,9 @@ export class SiteConfigService {
       if (config.site_description) {
         this.metaService.updateTag({ name: 'description', content: config.site_description });
       }
-    } catch {
-      console.warn('Failed to load site config from backend. Using defaults.');
+    } catch (error) {
+      console.error('Failed to load site config from backend. Throwing error to fail loudly:', error);
+      throw error;
     }
   }
 }
